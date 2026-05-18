@@ -593,27 +593,35 @@ nav{
 
 <div class="date-badge" id="date-badge">Memuat...</div>
 
-<script>
-const TOTAL     = 10;
-const STORE_KEY = 'finroutine_v3';
-const DATE_KEY  = 'finroutine_date';
-const WORD_KEY  = 'finroutine_word';
-const MEAN_KEY  = 'finroutine_meaning';
+<script type="module">
+// ── 1. IMPORT FIREBASE SDK ──
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+// ── 2. KONFIGURASI FIREBASE KAMU ──
+const firebaseConfig = {
+  apiKey: "AIzaSyCpsG6b5SmTV8qb_eP3RZvDFTKQBXrCQt0",
+  authDomain: "fanz-8e3ee.firebaseapp.com",
+  databaseURL: "https://fanz-8e3ee-default-rtdb.asia-southeast1.firebasedatabase.app", // Otomatis mengarah ke server Singapore kamu
+  projectId: "fanz-8e3ee",
+  storageBucket: "fanz-8e3ee.appspot.com",
+  messagingSenderId: "1001215008191",
+  appId: "1:1001215008191:web:ab892bb8fd36a7eef950a"
+};
+
+// Inisialisasi Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// Referensi Lokasi Penyimpanan di Cloud
+const dbTodoRef  = ref(db, 'finroutine/tasks');
+const dbVocabRef = ref(db, 'finroutine/vocab');
+
+const TOTAL = 10;
 
 /* ── WIB DATE STRING ── */
 function getWIBDate() {
   return new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Jakarta' });
-}
-
-/* ── AUTO-RESET CHECK ── */
-function checkAutoReset() {
-  const stored = localStorage.getItem(DATE_KEY);
-  const today  = getWIBDate();
-  if (stored && stored !== today) {
-    doReset(false);
-    showToast('🌅 Selamat pagi! Dashboard direset otomatis untuk hari baru.');
-  }
-  localStorage.setItem(DATE_KEY, today);
 }
 
 /* ── TOAST ── */
@@ -692,12 +700,13 @@ function ping(cel) {
   } catch(e){}
 }
 
-/* ── TOGGLE ── */
-function toggle(card) {
+/* ── TOGGLE TASK ── */
+// Membuat fungsi toggle ini bisa diakses secara global oleh HTML onclick
+window.toggle = function(card) {
   card.classList.toggle('completed');
   ping(card.classList.contains('completed'));
   updateProgress();
-  saveState();
+  saveStateToCloud();
 }
 
 /* ── PROGRESS ── */
@@ -714,64 +723,93 @@ function updateProgress() {
   else banner.classList.remove('show');
 }
 
-/* ── STORAGE ── */
-function saveState() {
+/* ── REAL-TIME CLOUD STORAGE ── */
+function saveStateToCloud() {
   const ids = [];
-  document.querySelectorAll('.task-card.completed').forEach(c=>ids.push(c.dataset.id));
-  localStorage.setItem(STORE_KEY, JSON.stringify(ids));
+  document.querySelectorAll('.task-card.completed').forEach(c => ids.push(c.dataset.id));
+  
+  // Kirim array ID tugas yang selesai dan tanggal hari ini ke Firebase Cloud
+  set(dbTodoRef, {
+    completedIds: ids,
+    lastUpdatedDate: getWIBDate()
+  });
 }
 
-function saveVocab() {
-  localStorage.setItem(WORD_KEY, document.getElementById('vocab-word').value);
-  localStorage.setItem(MEAN_KEY, document.getElementById('vocab-meaning').value);
+// Fungsi global untuk input "Word of the Day"
+window.saveVocab = function() {
+  const word = document.getElementById('vocab-word').value;
+  const meaning = document.getElementById('vocab-meaning').value;
+  
+  set(dbVocabRef, {
+    word: word,
+    meaning: meaning
+  });
 }
 
-function loadState() {
-  const saved = localStorage.getItem(STORE_KEY);
-  if (saved) {
-    JSON.parse(saved).forEach(id => {
-      const c = document.querySelector(`.task-card[data-id="${id}"]`);
-      if (c) c.classList.add('completed');
-    });
+/* ── LISTEN TO CLOUD CHANGES (MATA-MATA SYNC) ── */
+// Fungsi ini yang membuat HP dan Laptop kamu otomatis sinkron saat ada perubahan di cloud
+onValue(dbTodoRef, (snapshot) => {
+  const data = snapshot.val();
+  
+  // Bersihkan semua centangan dulu sebelum memuat data cloud terbaru
+  document.querySelectorAll('.task-card.completed').forEach(c => c.classList.remove('completed'));
+  
+  if (data) {
+    // Jalankan auto-reset jika tanggal cloud berbeda dengan tanggal hari ini di WIB
+    const today = getWIBDate();
+    if (data.lastUpdatedDate && data.lastUpdatedDate !== today) {
+      doResetCore(false); // Reset tugasnya saja, vocab dibiarkan
+      return;
+    }
+    
+    // Centang kembali kartu berdasarkan data dari cloud
+    if (data.completedIds) {
+      data.completedIds.forEach(id => {
+        const card = document.querySelector(`.task-card[data-id="${id}"]`);
+        if (card) card.classList.add('completed');
+      });
+    }
   }
-  const w = localStorage.getItem(WORD_KEY);
-  const mn = localStorage.getItem(MEAN_KEY);
-  if (w)  document.getElementById('vocab-word').value = w;
-  if (mn) document.getElementById('vocab-meaning').value = mn;
   updateProgress();
-}
+});
+
+// Selalu dengarkan perubahan ketikan Vocab dari perangkat lain
+onValue(dbVocabRef, (snapshot) => {
+  const data = snapshot.val();
+  if (data) {
+    document.getElementById('vocab-word').value = data.word || '';
+    document.getElementById('vocab-meaning').value = data.meaning || '';
+  }
+});
 
 /* ── RESET CORE ── */
-function doReset(withVocab=true) {
-  document.querySelectorAll('.task-card.completed').forEach(c=>c.classList.remove('completed'));
+function doResetCore(withVocab = true) {
+  document.querySelectorAll('.task-card.completed').forEach(c => c.classList.remove('completed'));
   document.getElementById('done-banner').classList.remove('show');
-  localStorage.removeItem(STORE_KEY);
+  
+  // Update data kosong ke Firebase
+  set(dbTodoRef, {
+    completedIds: [],
+    lastUpdatedDate: getWIBDate()
+  });
+
   if (withVocab) {
-    document.getElementById('vocab-word').value='';
-    document.getElementById('vocab-meaning').value='';
-    localStorage.removeItem(WORD_KEY);
-    localStorage.removeItem(MEAN_KEY);
+    document.getElementById('vocab-word').value = '';
+    document.getElementById('vocab-meaning').value = '';
+    set(dbVocabRef, { word: '', meaning: '' });
   }
-  localStorage.setItem(DATE_KEY, getWIBDate());
   updateProgress();
 }
 
 /* ── MANUAL RESET ── */
-function manualReset() {
+window.manualReset = function() {
   if (!confirm('Reset semua centangan untuk memulai hari baru?')) return;
-  doReset(true);
+  doResetCore(true);
   document.body.classList.add('shaking');
-  setTimeout(()=>document.body.classList.remove('shaking'), 500);
+  setTimeout(() => document.body.classList.remove('shaking'), 500);
   showToast('✅ Dashboard berhasil direset!');
 }
-
-/* ── INIT ── */
-window.onload = function() {
-  checkAutoReset();
-  loadState();
-};
-// Cek setiap menit (kalau tab dibuka melewati tengah malam)
-setInterval(checkAutoReset, 60000);
 </script>
 </body>
 </html>
+
