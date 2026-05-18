@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>FinRoutine — Daily Workspace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --accent: #6d3fc8;
+  --accent-2: #4f8ef7;
+  --accent-3: #e879a0;
+  --accent-dim: rgba(109,63,200,0.12);
+  --accent-glow: rgba(109,63,200,0.3);
+  --text: #1a1040;
+  --text-2: #4a3f70;
+  --text-3: #8b7fb5;
+  --glass: rgba(255,255,255,0.55);
+  --glass-h: rgba(255,255,255,0.78);
+  --gb: rgba(255,255,255,0.85);
+  --gbd: rgba(109,63,200,0.18);
+  --shadow: 0 8px 32px rgba(80,40,160,0.1);
+  --shadow-h: 0 16px 48px rgba(80,40,160,0.18);
+  --green: #059669;
+  --red: #dc2626;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+
+body{
+  font-family:'Syne',sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  color:var(--text);
+  background:#ede8ff;
+}
+
+/* ── MESH BG ── */
+.bg-mesh{
+  position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 900px 700px at 8% 0%,#ddd6fe 0%,transparent 58%),
+    radial-gradient(ellipse 700px 600px at 92% 8%,#bfdbfe 0%,transparent 52%),
+    radial-gradient(ellipse 600px 500px at 85% 85%,#fce7f3 0%,transparent 52%),
+    radial-gradient(ellipse 800px 600px at 4% 88%,#d1fae5 0%,transparent 52%),
+    radial-gradient(ellipse 500px 400px at 50% 50%,#ede9fe 0%,transparent 58%),
+    #f0ebff;
+}
+
+/* dot grid */
+.bg-dots{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:radial-gradient(circle,rgba(109,63,200,0.055) 1px,transparent 1px);
+  background-size:30px 30px;
+}
+
+/* decorative rings */
+.bg-rings{
+  position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+}
+.ring{
+  position:absolute;border-radius:50%;
+  border:1.5px solid rgba(109,63,200,0.07);
+  animation:rotateSlow 50s linear infinite;
+}
+.ring-1{width:600px;height:600px;top:-200px;left:-180px;animation-duration:55s;}
+.ring-2{width:800px;height:800px;bottom:-300px;right:-250px;animation-direction:reverse;animation-duration:70s;border-color:rgba(79,142,247,0.05);}
+.ring-3{width:400px;height:400px;top:40%;left:60%;border-color:rgba(232,121,160,0.06);animation-duration:40s;}
+
+@keyframes rotateSlow{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes scaleIn{from{opacity:0;transform:scale(0.9)}to{opacity:1;transform:scale(1)}}
+@keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+@keyframes tickPulse{0%,100%{box-shadow:0 0 0 0 var(--accent-glow)}50%{box-shadow:0 0 0 6px transparent}}
+@keyframes checkPop{0%{transform:scale(0)}65%{transform:scale(1.3)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}15%,45%,75%{transform:translateX(-6px)}30%,60%,90%{transform:translateX(6px)}}
+@keyframes float{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-4px)}}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(16px) scale(.95)}to{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}}
+
+/* ── NAV ── */
+nav{
+  position:sticky;top:0;z-index:100;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:16px 5%;
+  background:rgba(255,255,255,0.62);
+  backdrop-filter:blur(22px) saturate(200%);
+  -webkit-backdrop-filter:blur(22px) saturate(200%);
+  border-bottom:1px solid rgba(255,255,255,0.95);
+  box-shadow:0 2px 24px rgba(80,40,160,0.07);
+  animation:fadeUp .5s ease both;
+}
+
+.logo{font-size:18px;font-weight:800;letter-spacing:-.5px;display:flex;align-items:center;gap:8px;color:var(--text)}
+.logo-dot{width:8px;height:8px;background:var(--accent);border-radius:50%;animation:tickPulse 2s ease infinite}
+.logo em{font-style:normal;color:var(--accent)}
+
+.clock-block{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+#live-time{
+  font-family:'Space Mono',monospace;font-size:15px;font-weight:700;
+  color:var(--accent);
+  background:rgba(109,63,200,0.09);
+  border:1px solid rgba(109,63,200,0.22);
+  padding:5px 12px;border-radius:8px;letter-spacing:1px;
+}
+#live-greeting{font-size:10px;color:var(--text-3);font-weight:700;text-transform:uppercase;letter-spacing:.8px}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;top:78px;left:50%;
+  transform:translateX(-50%);
+  z-index:200;
+  background:rgba(255,255,255,0.92);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(109,63,200,0.28);
+  border-radius:14px;
+  padding:12px 22px;
+  box-shadow:0 8px 32px rgba(80,40,160,0.14);
+  display:flex;align-items:center;gap:10px;
+  font-size:14px;font-weight:600;color:var(--text);
+  white-space:nowrap;
+  animation:toastIn .4s cubic-bezier(.34,1.56,.64,1) both;
+}
+
+/* ── HERO ── */
+.hero{
+  position:relative;z-index:1;
+  text-align:center;
+  padding:72px 5% 44px;
+  animation:fadeUp .6s ease .1s both;
+}
+
+.hero-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(109,63,200,0.09);
+  border:1px solid rgba(109,63,200,0.22);
+  color:var(--accent);font-size:11px;font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;
+  padding:5px 14px;border-radius:100px;margin-bottom:20px;
+}
+.hero-tag .dot{width:6px;height:6px;background:var(--accent);border-radius:50%}
+
+.hero h1{
+  font-size:clamp(26px,5vw,50px);font-weight:800;
+  line-height:1.1;letter-spacing:-1.5px;
+  margin-bottom:28px;color:var(--text);
+}
+.hero h1 .grad{
+  background:linear-gradient(100deg,#6d3fc8 0%,#4f8ef7 48%,#e879a0 100%);
+  background-size:200% auto;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  animation:shimmer 5s linear infinite;
+}
+
+/* ── PROGRESS ── */
+.progress-wrap{
+  max-width:520px;margin:0 auto;
+  background:var(--glass);
+  border:1px solid var(--gb);
+  border-radius:18px;padding:18px 22px;
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(16px) saturate(180%);
+  -webkit-backdrop-filter:blur(16px) saturate(180%);
+  animation:fadeUp .6s ease .2s both;
+}
+.progress-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.progress-label{font-size:13px;font-weight:700;color:var(--text-2)}
+#progress-count{font-family:'Space Mono',monospace;font-size:13px;color:var(--accent);font-weight:700}
+.pbar-bg{width:100%;height:6px;background:rgba(109,63,200,0.1);border-radius:100px;overflow:hidden}
+.pbar-fill{
+  height:100%;width:0%;
+  background:linear-gradient(90deg,var(--accent),var(--accent-2),var(--accent-3));
+  border-radius:100px;
+  transition:width .7s cubic-bezier(.34,1.56,.64,1);
+}
+
+.stats-row{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:10px;
+  max-width:520px;margin:12px auto 0;
+}
+.stat-pill{
+  background:var(--glass);
+  border:1px solid var(--gb);
+  border-radius:12px;padding:10px 14px;text-align:center;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  box-shadow:0 2px 12px rgba(80,40,160,0.06);
+}
+.stat-pill .val{
+  font-family:'Space Mono',monospace;font-size:20px;font-weight:700;
+  color:var(--accent);display:block;line-height:1;
+}
+.stat-pill .lbl{font-size:10px;color:var(--text-3);font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-top:4px}
+
+/* ── MAIN ── */
+.main{
+  position:relative;z-index:1;
+  max-width:1100px;margin:0 auto;
+  padding:0 5% 100px;
+}
+
+/* ── VOCAB ── */
+.vocab-widget{
+  background:var(--glass);
+  border:1px solid var(--gb);
+  border-radius:18px;padding:20px 24px;
+  margin-top:44px;
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(18px) saturate(180%);
+  -webkit-backdrop-filter:blur(18px) saturate(180%);
+  animation:fadeUp .6s ease .3s both;
+  position:relative;overflow:hidden;
+}
+.vocab-widget::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--accent),var(--accent-2),var(--accent-3),transparent);
+}
+/* inner shine */
+.vocab-widget::after{
+  content:'';position:absolute;top:0;left:8%;right:8%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.95),transparent);
+}
+.vocab-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-3);margin-bottom:14px}
+.vocab-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.vocab-input{
+  width:100%;
+  background:rgba(255,255,255,0.72);
+  border:1px solid rgba(109,63,200,0.14);
+  color:var(--text);padding:11px 14px;
+  border-radius:10px;font-size:14px;
+  font-family:'Syne',sans-serif;
+  transition:border-color .2s,box-shadow .2s;
+}
+.vocab-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(109,63,200,0.1);background:rgba(255,255,255,0.96)}
+.vocab-input::placeholder{color:var(--text-3)}
+
+/* ── SECTION HEAD ── */
+.section-head{
+  margin:52px 0 20px;display:flex;align-items:center;gap:14px;
+  animation:fadeUp .5s ease both;
+}
+.section-icon{
+  width:38px;height:38px;
+  background:var(--glass);border:1px solid var(--gb);
+  border-radius:12px;display:flex;align-items:center;justify-content:center;
+  font-size:18px;box-shadow:var(--shadow);
+  backdrop-filter:blur(8px);flex-shrink:0;
+}
+.section-text h2{font-size:18px;font-weight:800;letter-spacing:-.4px;margin-bottom:2px;color:var(--text)}
+.section-text h2 em{font-style:normal;color:var(--accent)}
+.section-text p{font-size:13px;color:var(--text-3);font-weight:400}
+
+/* ── TASK GRID ── */
+.task-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+
+/* ── TASK CARD — GLASS ── */
+.task-card{
+  position:relative;
+  background:var(--glass);
+  border:1px solid var(--gb);
+  border-radius:18px;
+  padding:20px;
+  cursor:pointer;
+  overflow:hidden;
+  opacity:0;
+  animation:fadeUp .5s cubic-bezier(.22,1,.36,1) both;
+  transition:
+    border-color .25s,background .25s,
+    transform .25s cubic-bezier(.22,1,.36,1),
+    box-shadow .25s,opacity .4s;
+  backdrop-filter:blur(16px) saturate(180%);
+  -webkit-backdrop-filter:blur(16px) saturate(180%);
+  box-shadow:var(--shadow);
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
+
+/* top shine */
+.task-card::after{
+  content:'';position:absolute;top:0;left:8%;right:8%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.95),transparent);
+  border-radius:100px;
+}
+
+.task-card:hover{
+  border-color:rgba(109,63,200,0.32);
+  background:var(--glass-h);
+  transform:translateY(-5px);
+  box-shadow:var(--shadow-h),0 0 0 1px rgba(109,63,200,0.12);
+}
+.task-card:active{transform:translateY(-2px) scale(.99)}
+
+/* stagger */
+.task-card:nth-child(1){animation-delay:.28s}.task-card:nth-child(2){animation-delay:.35s}
+.task-card:nth-child(3){animation-delay:.42s}.task-card:nth-child(4){animation-delay:.49s}
+.task-card:nth-child(5){animation-delay:.56s}.task-card:nth-child(6){animation-delay:.63s}
+.task-card:nth-child(7){animation-delay:.70s}.task-card:nth-child(8){animation-delay:.77s}
+.task-card:nth-child(9){animation-delay:.84s}.task-card:nth-child(10){animation-delay:.91s}
+
+/* left accent bar */
+.task-card::before{
+  content:'';position:absolute;left:0;top:18px;bottom:18px;
+  width:3px;
+  background:linear-gradient(to bottom,var(--accent),var(--accent-2));
+  border-radius:0 3px 3px 0;
+  opacity:0;transition:opacity .25s;
+}
+.task-card:hover::before{opacity:.65}
+.task-card.highlighted::before{opacity:1}
+.task-card.highlighted{
+  background:rgba(255,255,255,0.66);
+  border-color:rgba(109,63,200,0.22);
+}
+
+/* completed */
+.task-card.completed{
+  opacity:.26;transform:none!important;
+  box-shadow:none!important;
+  border-color:rgba(200,200,220,0.45)!important;
+  background:rgba(255,255,255,0.28)!important;
+}
+.task-card.completed:hover{opacity:.4;border-color:rgba(109,63,200,0.18)!important;transform:none!important}
+.task-card.completed .card-title{text-decoration:line-through;color:var(--text-3)}
+.task-card.completed .card-desc{text-decoration:line-through;color:#b0a8cc}
+.task-card.completed .time-chip{opacity:.32}
+
+.card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.time-chip{
+  font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.5px;
+  color:var(--accent);
+  background:rgba(109,63,200,0.08);
+  border:1px solid rgba(109,63,200,0.18);
+  padding:4px 10px;border-radius:100px;transition:all .25s;
+}
+.task-card:hover .time-chip{background:rgba(109,63,200,0.14);border-color:rgba(109,63,200,0.3)}
+
+.chk{
+  width:22px;height:22px;
+  border:2px solid rgba(109,63,200,0.2);border-radius:6px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  background:rgba(255,255,255,0.65);
+  transition:all .2s cubic-bezier(.34,1.56,.64,1);
+}
+.task-card:hover .chk{border-color:var(--accent);background:rgba(109,63,200,0.06)}
+.task-card.completed .chk{background:var(--accent);border-color:var(--accent);animation:checkPop .35s cubic-bezier(.34,1.56,.64,1)}
+.chk-icon{opacity:0;color:#fff;font-size:13px;font-weight:900;transition:opacity .15s .1s}
+.task-card.completed .chk-icon{opacity:1}
+
+.card-title{font-size:15px;font-weight:700;letter-spacing:-.3px;margin-bottom:6px;color:var(--text);transition:color .2s;line-height:1.3}
+.card-desc{font-size:13px;color:var(--text-2);line-height:1.55;font-weight:400;transition:color .2s}
+
+/* ── DONE BANNER ── */
+.done-banner{
+  display:none;align-items:center;justify-content:center;gap:14px;
+  background:rgba(209,250,229,0.62);
+  border:1px solid rgba(5,150,105,0.22);
+  border-radius:18px;padding:18px 28px;margin-top:40px;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  box-shadow:0 8px 32px rgba(5,150,105,0.1);text-align:center;
+}
+.done-banner.show{display:flex;animation:scaleIn .4s cubic-bezier(.34,1.56,.64,1)}
+.done-banner .done-icon{font-size:28px}
+.done-banner strong{font-size:16px;font-weight:800;color:var(--green);display:block;margin-bottom:2px}
+.done-banner p{font-size:13px;color:var(--text-2)}
+
+/* ── ACTIONS ── */
+.action-wrap{
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+  padding:50px 0 0;
+  animation:fadeUp .5s ease 1.1s both;
+}
+.reset-info{
+  font-size:12px;color:var(--text-3);font-weight:600;
+  display:flex;align-items:center;gap:6px;
+  background:var(--glass);border:1px solid var(--gb);
+  padding:8px 16px;border-radius:100px;
+  backdrop-filter:blur(8px);
+  box-shadow:0 2px 12px rgba(80,40,160,0.06);
+}
+.dot-live{width:6px;height:6px;background:var(--green);border-radius:50%;animation:tickPulse 2s ease infinite}
+
+.reset-btn{
+  font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:.3px;
+  color:var(--red);
+  background:rgba(255,255,255,0.55);
+  border:1px solid rgba(220,38,38,0.2);
+  padding:12px 24px;border-radius:12px;cursor:pointer;
+  transition:all .2s;
+  backdrop-filter:blur(8px);
+  display:flex;align-items:center;gap:8px;
+}
+.reset-btn:hover{background:rgba(220,38,38,0.07);border-color:rgba(220,38,38,0.35);transform:scale(1.03)}
+.reset-btn:active{transform:scale(.98)}
+
+/* ── DATE BADGE ── */
+.date-badge{
+  position:fixed;bottom:22px;left:50%;
+  transform:translateX(-50%);
+  background:rgba(255,255,255,0.78);
+  border:1px solid rgba(109,63,200,0.16);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  padding:8px 20px;border-radius:100px;
+  font-size:12px;font-weight:700;color:var(--text-2);
+  letter-spacing:.3px;z-index:50;white-space:nowrap;
+  box-shadow:0 4px 20px rgba(80,40,160,0.1);
+  animation:float 4s ease-in-out infinite;
+}
+.date-badge em{font-style:normal;color:var(--accent)}
+
+.shaking{animation:shake .5s ease!important}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  nav{padding:14px 5%}
+  .logo{font-size:16px}
+  #live-time{font-size:13px;padding:4px 10px}
+  .hero{padding:56px 5% 32px}
+  .hero h1{letter-spacing:-1px;margin-bottom:22px}
+  .vocab-grid{grid-template-columns:1fr}
+  .task-grid{grid-template-columns:1fr;gap:10px}
+  .card-title{font-size:14px}
+  .stats-row{gap:8px}
+  .stat-pill .val{font-size:18px}
+  .date-badge{font-size:11px;bottom:14px;padding:7px 16px}
+  .reset-info{font-size:11px}
+}
+@media(max-width:480px){
+  nav{padding:12px 4%}
+  .hero{padding:46px 4% 28px}
+  .main{padding:0 4% 80px}
+  .vocab-widget{padding:16px 18px}
+  .task-card{padding:16px}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-mesh"></div>
+<div class="bg-dots"></div>
+<div class="bg-rings">
+  <div class="ring ring-1"></div>
+  <div class="ring ring-2"></div>
+  <div class="ring ring-3"></div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="logo"><div class="logo-dot"></div>Fin<em>Routine</em></div>
+  <div class="clock-block">
+    <div id="live-time">00:00:00</div>
+    <div id="live-greeting">WIB</div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-tag"><span class="dot"></span>Daily Productive Workspace</div>
+  <h1>Innovating Tomorrow,<br><span class="grad">Building Productive Today.</span></h1>
+
+  <div class="progress-wrap">
+    <div class="progress-row">
+      <span class="progress-label">Task Progress</span>
+      <span id="progress-count">0 / 10 selesai</span>
+    </div>
+    <div class="pbar-bg"><div class="pbar-fill" id="pbar"></div></div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-pill"><span class="val" id="stat-done">0</span><span class="lbl">Selesai</span></div>
+    <div class="stat-pill"><span class="val" id="stat-remain">10</span><span class="lbl">Tersisa</span></div>
+    <div class="stat-pill"><span class="val" id="stat-pct">0%</span><span class="lbl">Progress</span></div>
+  </div>
+</section>
+
+<main class="main">
+
+  <!-- VOCAB -->
+  <div class="vocab-widget">
+    <div class="vocab-label">🚀 Word of the Day — English Vocabulary</div>
+    <div class="vocab-grid">
+      <input type="text" id="vocab-word" class="vocab-input" placeholder="Kata/Phrase baru… (mis. Impeccable)" oninput="saveVocab()">
+      <input type="text" id="vocab-meaning" class="vocab-input" placeholder="Artinya… (mis. Sempurna, tanpa cela)" oninput="saveVocab()">
+    </div>
+  </div>
+
+  <!-- PAGI -->
+  <div class="section-head">
+    <div class="section-icon">🌅</div>
+    <div class="section-text">
+      <h2>Pagi Hari — <em>Fokus & Upgrade</em></h2>
+      <p>Memulai hari saat pikiran dalam kondisi paling prima.</p>
+    </div>
+  </div>
+  <div class="task-grid">
+    <div class="task-card" data-id="1" onclick="toggle(this)">
+      <div class="card-top"><span class="time-chip">05:00 – 06:00</span><div class="chk"><span class="chk-icon">✓</span></div></div>
+      <div class="card-title">Bangun Pagi & Rutinitas Awal</div>
+      <div class="card-desc">Ibadah pagi, peregangan fisik ringan, mandi segar, dan minum air putih hangat untuk mengaktifkan tubuh.</div>
+    </div>
+    <div class="task-card" data-id="2" onclick="toggle(this)">
+      <div class="card-top"><span class="time-chip">06:00 – 07:00</span><div class="chk"><span class="chk-icon">✓</span></div></div>
+      <div class="card-title">Health & Mindset Prep</div>
+      <div class="card-desc">Sarapan sehat bergizi dan menghirup udara pagi segar. Jauhkan smartphone — bangun mindset tanpa distraksi.</div>
+    </div>
+    <div class="task-card highlighted" data-id="3" onclick="toggle(this)">
+      <div class="card-top"><span class="time-chip">07:00 – 09:00</span><div class="chk"><span class="chk-icon">✓</span></div></div>
+      <div class="card-title">Deep Work: Asah Bahasa Inggris</div>
+      <div class="card-desc">Baca dokumentasi teknis, latihan listening/podcast, catat vocab baru — tanpa subtitle Indonesia.</div>
+    </div>
+  </div>
+
+  <!-- SIANG -->
+  <div class="section-head">
+    <div class="section-icon">☀️</div>
+    <div class="section-text">
+      <h2>Siang Hari — <em>Karier & Hasil</em></h2>
+      <p>Eksekusi proyek kreatif komersial dengan produktivitas maksimal.</p>
+    </div>
+  </div>
+  <div class="task-grid">
+    <div class="task-card highlighted" data-id="4" onclick="toggle(this)">
+      <div class="card-top"><span class="time-chip">09:00 – 12:00</span><div class="chk"><span class="chk-icon">✓</span></div></div>
+      <div class="card-title">Freelance Work: Proyek Klien</div>
+      <div class="card-desc">Fokus penuh garap aset kreatif — video editing (CapCut) atau graphic design (Affinity Designer).</div>
+    </div>
+    <div class="task-card" data-id="5" onclick="toggle(this)">
+      <div class="card-top"><span class="time-chip">12:00 – 13:30</span><div class="chk"><span class="chk-icon">✓</span></div></div>
+      <div class="card-title">Makan Siang & Power Nap</div>
+      <div class="card-desc">Istirahat total, ibadah siang, makan siang teratur, lalu 15–20 menit tidur siang kilat untuk recharge.</div>
+    </div>
+    <div class="task-card" data-id="6" onclick="toggle(this)">
+      <div class="card-top"><span class="time-chip">13:30 – 15:30</span><div class="chk"><span class="chk-icon">✓</span></div></div>
+      <div class="card-title">Maintenance & Lab Jaringan</div>
+      <div class="card-desc">Selesaikan sisa revisi freelance atau eksperimen troubleshooting sistem & simulasi jaringan virtual.</div>
+    </div>
+  </div>
+
+  <!-- SORE & MALAM -->
+  <div class="section-head">
+    <div class="section-icon">🌃</div>
+    <div class="section-text">
+      <h2>Sore & Malam — <em>Evaluasi & Reward</em></h2>
+      <p>Seimbangkan administrasi, kebugaran fisik, relaksasi, dan istirahat pemulihan.</p>
+    </div>
+  </div>
+  <div class="task-grid">
+    <div class="task-card" data-id="7" onclick="toggle(this)">
+      <div class="card-top"><span class="time-chip">15:30 – 16:30</span><div class="chk"><span class="chk-icon">✓</span></div></div>
+      <div class="card-title">Administrasi & Portofolio</div>
+      <div class="card-desc">Balas pesan klien, cari proyek baru, dan rapikan arsip portofolio karya terbaik.</div>
+    </div>
+    <div class="task-card" data-id="8" onclick="toggle(this)">
+      <div class="card-top"><span class="time-chip">16:30 – 18:00</span><div class="chk"><span class="chk-icon">✓</span></div></div>
+      <div class="card-title">Olahraga & Mandi Sore</div>
+      <div class="card-desc">Workout ringan di rumah — cegah badan kaku setelah duduk di depan PC seharian.</div>
+    </div>
+    <div class="task-card" data-id="9" onclick="toggle(this)">
+      <div class="card-top"><span class="time-chip">19:30 – 21:30</span><div class="chk"><span class="chk-icon">✓</span></div></div>
+      <div class="card-title">Gaming / Strategic Refreshing</div>
+      <div class="card-desc">Waktunya lepas penat — bermain game kompetitif taktis favorit atau mabar bareng teman.</div>
+    </div>
+    <div class="task-card" data-id="10" onclick="toggle(this)">
+      <div class="card-top"><span class="time-chip">21:30 – 22:00</span><div class="chk"><span class="chk-icon">✓</span></div></div>
+      <div class="card-title">Review & Sleep Preparation</div>
+      <div class="card-desc">Evaluasi target harian, susun to-do list esok, bersihkan workspace, lalu tidur tepat jam 22:00.</div>
+    </div>
+  </div>
+
+  <!-- DONE -->
+  <div class="done-banner" id="done-banner">
+    <span class="done-icon">🎉</span>
+    <div>
+      <strong>Semua Task Selesai!</strong>
+      <p>Luar biasa — produktivitas kamu 100% hari ini. Istirahat dengan tenang!</p>
+    </div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="action-wrap">
+    <div class="reset-info">
+      <span class="dot-live"></span>
+      Auto-reset aktif setiap tengah malam WIB (00:00 WIB)
+    </div>
+    <button class="reset-btn" onclick="manualReset()">↺ Reset Manual Hari Baru</button>
+  </div>
+
+</main>
+
+<div class="date-badge" id="date-badge">Memuat...</div>
+
+<script>
+const TOTAL     = 10;
+const STORE_KEY = 'finroutine_v3';
+const DATE_KEY  = 'finroutine_date';
+const WORD_KEY  = 'finroutine_word';
+const MEAN_KEY  = 'finroutine_meaning';
+
+/* ── WIB DATE STRING ── */
+function getWIBDate() {
+  return new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Jakarta' });
+}
+
+/* ── AUTO-RESET CHECK ── */
+function checkAutoReset() {
+  const stored = localStorage.getItem(DATE_KEY);
+  const today  = getWIBDate();
+  if (stored && stored !== today) {
+    doReset(false);
+    showToast('🌅 Selamat pagi! Dashboard direset otomatis untuk hari baru.');
+  }
+  localStorage.setItem(DATE_KEY, today);
+}
+
+/* ── TOAST ── */
+function showToast(msg) {
+  const old = document.getElementById('toast-el');
+  if (old) old.remove();
+  const t = document.createElement('div');
+  t.id = 'toast-el';
+  t.className = 'toast';
+  t.innerHTML = msg;
+  document.body.appendChild(t);
+  setTimeout(() => {
+    t.style.transition = 'opacity .4s,transform .4s';
+    t.style.opacity = '0';
+    t.style.transform = 'translateX(-50%) translateY(-12px)';
+    setTimeout(() => t.remove(), 420);
+  }, 4200);
+}
+
+/* ── CLOCK WIB ── */
+function clock() {
+  const wib = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }));
+  const h = String(wib.getHours()).padStart(2,'0');
+  const m = String(wib.getMinutes()).padStart(2,'0');
+  const s = String(wib.getSeconds()).padStart(2,'0');
+  document.getElementById('live-time').textContent = `${h}:${m}:${s}`;
+  const hr = wib.getHours();
+  let g = 'WIB · Tetap semangat!';
+  if (hr>=4&&hr<7)   g='WIB · Selamat pagi — ibadah & mulai!';
+  else if(hr>=7&&hr<9)    g='WIB · Deep work time — fokus!';
+  else if(hr>=9&&hr<12)   g='WIB · Eksekusi proyek klien!';
+  else if(hr>=12&&hr<14)  g='WIB · Waktu makan siang & recharge!';
+  else if(hr>=14&&hr<16)  g='WIB · Siang produktif, jangan kendur!';
+  else if(hr>=16&&hr<18)  g='WIB · Olahraga & mandi sore!';
+  else if(hr>=18&&hr<20)  g='WIB · Santai, evaluasi diri!';
+  else if(hr>=20&&hr<22)  g='WIB · Gaming time, have fun!';
+  else if(hr>=22)         g='WIB · Saatnya tidur — istirahat!';
+  else                    g='WIB · Dini hari, istirahat ya!';
+  document.getElementById('live-greeting').textContent = g;
+}
+setInterval(clock, 1000);
+clock();
+
+/* ── DATE BADGE ── */
+function updateBadge() {
+  const wib    = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }));
+  const days   = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+  const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+  document.getElementById('date-badge').innerHTML =
+    `${days[wib.getDay()]}, <em>${wib.getDate()} ${months[wib.getMonth()]} ${wib.getFullYear()}</em> · WIB`;
+}
+updateBadge();
+setInterval(updateBadge, 60000);
+
+/* ── SOUND ── */
+function ping(cel) {
+  try {
+    const ctx  = new (window.AudioContext||window.webkitAudioContext)();
+    const osc  = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    if (cel) {
+      osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(1046.5, ctx.currentTime+.18);
+      gain.gain.setValueAtTime(.06, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(.001, ctx.currentTime+.28);
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(); osc.stop(ctx.currentTime+.28);
+    } else {
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      gain.gain.setValueAtTime(.04, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(.001, ctx.currentTime+.15);
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(); osc.stop(ctx.currentTime+.15);
+    }
+  } catch(e){}
+}
+
+/* ── TOGGLE ── */
+function toggle(card) {
+  card.classList.toggle('completed');
+  ping(card.classList.contains('completed'));
+  updateProgress();
+  saveState();
+}
+
+/* ── PROGRESS ── */
+function updateProgress() {
+  const done = document.querySelectorAll('.task-card.completed').length;
+  const pct  = Math.round((done/TOTAL)*100);
+  document.getElementById('pbar').style.width = pct+'%';
+  document.getElementById('progress-count').textContent = `${done} / ${TOTAL} selesai`;
+  document.getElementById('stat-done').textContent = done;
+  document.getElementById('stat-remain').textContent = TOTAL-done;
+  document.getElementById('stat-pct').textContent = pct+'%';
+  const banner = document.getElementById('done-banner');
+  if (done===TOTAL) { banner.classList.add('show'); ping(true); }
+  else banner.classList.remove('show');
+}
+
+/* ── STORAGE ── */
+function saveState() {
+  const ids = [];
+  document.querySelectorAll('.task-card.completed').forEach(c=>ids.push(c.dataset.id));
+  localStorage.setItem(STORE_KEY, JSON.stringify(ids));
+}
+
+function saveVocab() {
+  localStorage.setItem(WORD_KEY, document.getElementById('vocab-word').value);
+  localStorage.setItem(MEAN_KEY, document.getElementById('vocab-meaning').value);
+}
+
+function loadState() {
+  const saved = localStorage.getItem(STORE_KEY);
+  if (saved) {
+    JSON.parse(saved).forEach(id => {
+      const c = document.querySelector(`.task-card[data-id="${id}"]`);
+      if (c) c.classList.add('completed');
+    });
+  }
+  const w = localStorage.getItem(WORD_KEY);
+  const mn = localStorage.getItem(MEAN_KEY);
+  if (w)  document.getElementById('vocab-word').value = w;
+  if (mn) document.getElementById('vocab-meaning').value = mn;
+  updateProgress();
+}
+
+/* ── RESET CORE ── */
+function doReset(withVocab=true) {
+  document.querySelectorAll('.task-card.completed').forEach(c=>c.classList.remove('completed'));
+  document.getElementById('done-banner').classList.remove('show');
+  localStorage.removeItem(STORE_KEY);
+  if (withVocab) {
+    document.getElementById('vocab-word').value='';
+    document.getElementById('vocab-meaning').value='';
+    localStorage.removeItem(WORD_KEY);
+    localStorage.removeItem(MEAN_KEY);
+  }
+  localStorage.setItem(DATE_KEY, getWIBDate());
+  updateProgress();
+}
+
+/* ── MANUAL RESET ── */
+function manualReset() {
+  if (!confirm('Reset semua centangan untuk memulai hari baru?')) return;
+  doReset(true);
+  document.body.classList.add('shaking');
+  setTimeout(()=>document.body.classList.remove('shaking'), 500);
+  showToast('✅ Dashboard berhasil direset!');
+}
+
+/* ── INIT ── */
+window.onload = function() {
+  checkAutoReset();
+  loadState();
+};
+// Cek setiap menit (kalau tab dibuka melewati tengah malam)
+setInterval(checkAutoReset, 60000);
+</script>
+</body>
+</html>
