@@ -2088,7 +2088,7 @@ window.handleLogin = async function() {
 
   try {
     await signInWithEmailAndPassword(auth, email, pass);
-    // onAuthStateChanged akan otomatis menampilkan dashboard
+    btn.classList.remove('loading'); // <--- INI KODE UNTUK MENGHENTIKAN LOADING
   } catch (err) {
     showToast(getAuthErrorMsg(err.code));
     btn.classList.remove('loading');
@@ -2126,7 +2126,7 @@ window.handleRegister = async function() {
   try {
     await createUserWithEmailAndPassword(auth, email, pass);
     showToast('🎉 Akun berhasil dibuat! Selamat datang di FanzRoutine!');
-    // onAuthStateChanged akan otomatis menampilkan dashboard
+    btn.classList.remove('loading'); // <--- INI KODE UNTUK MENGHENTIKAN LOADING
   } catch (err) {
     showToast(getAuthErrorMsg(err.code));
     btn.classList.remove('loading');
