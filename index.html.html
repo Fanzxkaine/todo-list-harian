@@ -27,7 +27,12 @@
 }
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
+
+/* OPTIMASI 1: Mematikan jeda klik 300ms di HP agar instan */
+html, body {
+  scroll-behavior:smooth;
+  touch-action: manipulation;
+}
 
 body{
   font-family:'Syne',sans-serif;
@@ -184,18 +189,18 @@ nav{
   display:grid;grid-template-columns:repeat(3,1fr);gap:10px;
   max-width:520px;margin:12px auto 0;
 }
-.stat-pill{
+.stats-pill, .stat-pill{
   background:var(--glass);
   border:1px solid var(--gb);
   border-radius:12px;padding:10px 14px;text-align:center;
   backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   box-shadow:0 2px 12px rgba(80,40,160,0.06);
 }
-.stat-pill .val{
+.stats-pill .val, .stat-pill .val{
   font-family:'Space Mono',monospace;font-size:20px;font-weight:700;
   color:var(--accent);display:block;line-height:1;
 }
-.stat-pill .lbl{font-size:10px;color:var(--text-3);font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-top:4px}
+.stats-pill .lbl, .stat-pill .lbl{font-size:10px;color:var(--text-3);font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-top:4px}
 
 /* ── MAIN ── */
 .main{
@@ -269,13 +274,16 @@ nav{
   overflow:hidden;
   opacity:0;
   animation:fadeUp .5s cubic-bezier(.22,1,.36,1) both;
+  
+  /* OPTIMASI 2: Akselerasi grafis biar rendering kartu lancar tanpa patah/delay */
+  will-change: transform, opacity;
+  
   transition:
     border-color .25s,background .25s,
     transform .25s cubic-bezier(.22,1,.36,1),
     box-shadow .25s,opacity .4s;
   backdrop-filter:blur(16px) saturate(180%);
   -webkit-backdrop-filter:blur(16px) saturate(180%);
-  box-shadow:var(--shadow);
   -webkit-tap-highlight-color:transparent;
   user-select:none;
 }
@@ -425,7 +433,7 @@ nav{
   .task-grid{grid-template-columns:1fr;gap:10px}
   .card-title{font-size:14px}
   .stats-row{gap:8px}
-  .stat-pill .val{font-size:18px}
+  .stat-pill .val, .stats-pill .val{font-size:18px}
   .date-badge{font-size:11px;bottom:14px;padding:7px 16px}
   .reset-info{font-size:11px}
 }
@@ -448,7 +456,6 @@ nav{
   <div class="ring ring-3"></div>
 </div>
 
-<!-- NAV -->
 <nav>
   <div class="logo"><div class="logo-dot"></div>Fin<em>Routine</em></div>
   <div class="clock-block">
@@ -457,7 +464,6 @@ nav{
   </div>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
   <div class="hero-tag"><span class="dot"></span>Daily Productive Workspace</div>
   <h1>Innovating Tomorrow,<br><span class="grad">Building Productive Today.</span></h1>
@@ -479,7 +485,6 @@ nav{
 
 <main class="main">
 
-  <!-- VOCAB -->
   <div class="vocab-widget">
     <div class="vocab-label">🚀 Word of the Day — English Vocabulary</div>
     <div class="vocab-grid">
@@ -488,7 +493,6 @@ nav{
     </div>
   </div>
 
-  <!-- PAGI -->
   <div class="section-head">
     <div class="section-icon">🌅</div>
     <div class="section-text">
@@ -505,7 +509,7 @@ nav{
     <div class="task-card" data-id="2" onclick="toggle(this)">
       <div class="card-top"><span class="time-chip">06:00 – 07:00</span><div class="chk"><span class="chk-icon">✓</span></div></div>
       <div class="card-title">Health & Mindset Prep</div>
-      <div class="card-desc">Sarapan sehat bergizi dan menghirup udara pagi segar. Jauhkan smartphone — bangun mindset tanpa distraksi.</div>
+      <div class="card-desc">Sarapan sehat bergizi and menghirup udara pagi segar. Jauhkan smartphone — bangun mindset tanpa distraksi.</div>
     </div>
     <div class="task-card highlighted" data-id="3" onclick="toggle(this)">
       <div class="card-top"><span class="time-chip">07:00 – 09:00</span><div class="chk"><span class="chk-icon">✓</span></div></div>
@@ -514,7 +518,6 @@ nav{
     </div>
   </div>
 
-  <!-- SIANG -->
   <div class="section-head">
     <div class="section-icon">☀️</div>
     <div class="section-text">
@@ -540,7 +543,6 @@ nav{
     </div>
   </div>
 
-  <!-- SORE & MALAM -->
   <div class="section-head">
     <div class="section-icon">🌃</div>
     <div class="section-text">
@@ -571,7 +573,6 @@ nav{
     </div>
   </div>
 
-  <!-- DONE -->
   <div class="done-banner" id="done-banner">
     <span class="done-icon">🎉</span>
     <div>
@@ -580,7 +581,6 @@ nav{
     </div>
   </div>
 
-  <!-- ACTIONS -->
   <div class="action-wrap">
     <div class="reset-info">
       <span class="dot-live"></span>
@@ -594,30 +594,27 @@ nav{
 <div class="date-badge" id="date-badge">Memuat...</div>
 
 <script type="module">
-// ── 1. IMPORT FIREBASE SDK ──
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-// ── 2. KONFIGURASI FIREBASE KAMU ──
+// Konfigurasi Project Firebase Baru Kamu
 const firebaseConfig = {
   apiKey: "AIzaSyCpsG6b5SmTV8qb_eP3RZvDFTKQBXrCQt0",
   authDomain: "fanz-8e3ee.firebaseapp.com",
-  databaseURL: "https://fanz-8e3ee-default-rtdb.asia-southeast1.firebasedatabase.app", // Otomatis mengarah ke server Singapore kamu
+  databaseURL: "https://fanz-8e3ee-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "fanz-8e3ee",
   storageBucket: "fanz-8e3ee.appspot.com",
   messagingSenderId: "1001215008191",
   appId: "1:1001215008191:web:ab892bb8fd36a7eef950a"
 };
 
-// Inisialisasi Firebase
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-
-// Referensi Lokasi Penyimpanan di Cloud
 const dbTodoRef  = ref(db, 'finroutine/tasks');
 const dbVocabRef = ref(db, 'finroutine/vocab');
 
 const TOTAL = 10;
+let audioCtx = null; // OPTIMASI 3: Audio di-load sekali di awal biar klik tidak delay
 
 /* ── WIB DATE STRING ── */
 function getWIBDate() {
@@ -676,36 +673,43 @@ function updateBadge() {
 updateBadge();
 setInterval(updateBadge, 60000);
 
-/* ── SOUND ── */
+/* ── SOUND OPTIMIZED ── */
 function ping(cel) {
   try {
-    const ctx  = new (window.AudioContext||window.webkitAudioContext)();
-    const osc  = ctx.createOscillator();
-    const gain = ctx.createGain();
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    const osc  = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
     osc.type = 'sine';
     if (cel) {
-      osc.frequency.setValueAtTime(523.25, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(1046.5, ctx.currentTime+.18);
-      gain.gain.setValueAtTime(.06, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(.001, ctx.currentTime+.28);
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.start(); osc.stop(ctx.currentTime+.28);
+      osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(1046.5, audioCtx.currentTime+.18);
+      gain.gain.setValueAtTime(.06, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(.001, audioCtx.currentTime+.28);
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.start(); osc.stop(audioCtx.currentTime+.28);
     } else {
-      osc.frequency.setValueAtTime(880, ctx.currentTime);
-      gain.gain.setValueAtTime(.04, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(.001, ctx.currentTime+.15);
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.start(); osc.stop(ctx.currentTime+.15);
+      osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+      gain.gain.setValueAtTime(.04, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(.001, audioCtx.currentTime+.15);
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.start(); osc.stop(audioCtx.currentTime+.15);
     }
   } catch(e){}
 }
 
-/* ── TOGGLE TASK ── */
-// Membuat fungsi toggle ini bisa diakses secara global oleh HTML onclick
+/* ── TOGGLE INSTAN ── */
 window.toggle = function(card) {
+  // Langsung eksekusi visual UI agar instan tanpa delay 0ms
   card.classList.toggle('completed');
   ping(card.classList.contains('completed'));
   updateProgress();
+  
+  // Kirim data ke Firebase di background
   saveStateToCloud();
 }
 
@@ -723,57 +727,45 @@ function updateProgress() {
   else banner.classList.remove('show');
 }
 
-/* ── REAL-TIME CLOUD STORAGE ── */
+/* ── CLOUD SAVE ── */
 function saveStateToCloud() {
   const ids = [];
   document.querySelectorAll('.task-card.completed').forEach(c => ids.push(c.dataset.id));
-  
-  // Kirim array ID tugas yang selesai dan tanggal hari ini ke Firebase Cloud
   set(dbTodoRef, {
     completedIds: ids,
     lastUpdatedDate: getWIBDate()
   });
 }
 
-// Fungsi global untuk input "Word of the Day"
 window.saveVocab = function() {
   const word = document.getElementById('vocab-word').value;
   const meaning = document.getElementById('vocab-meaning').value;
-  
-  set(dbVocabRef, {
-    word: word,
-    meaning: meaning
-  });
+  set(dbVocabRef, { word, meaning });
 }
 
-/* ── LISTEN TO CLOUD CHANGES (MATA-MATA SYNC) ── */
-// Fungsi ini yang membuat HP dan Laptop kamu otomatis sinkron saat ada perubahan di cloud
+/* ── LISTEN CLOUD SYNC ── */
 onValue(dbTodoRef, (snapshot) => {
   const data = snapshot.val();
-  
-  // Bersihkan semua centangan dulu sebelum memuat data cloud terbaru
-  document.querySelectorAll('.task-card.completed').forEach(c => c.classList.remove('completed'));
-  
   if (data) {
-    // Jalankan auto-reset jika tanggal cloud berbeda dengan tanggal hari ini di WIB
     const today = getWIBDate();
     if (data.lastUpdatedDate && data.lastUpdatedDate !== today) {
-      doResetCore(false); // Reset tugasnya saja, vocab dibiarkan
+      doResetCore(false);
       return;
     }
-    
-    // Centang kembali kartu berdasarkan data dari cloud
-    if (data.completedIds) {
-      data.completedIds.forEach(id => {
-        const card = document.querySelector(`.task-card[data-id="${id}"]`);
-        if (card) card.classList.add('completed');
-      });
-    }
+    document.querySelectorAll('.task-card').forEach(card => {
+      const id = card.dataset.id;
+      if (data.completedIds && data.completedIds.includes(id)) {
+        card.classList.add('completed');
+      } else {
+        card.classList.remove('completed');
+      }
+    });
+  } else {
+    document.querySelectorAll('.task-card').forEach(card => card.classList.remove('completed'));
   }
   updateProgress();
 });
 
-// Selalu dengarkan perubahan ketikan Vocab dari perangkat lain
 onValue(dbVocabRef, (snapshot) => {
   const data = snapshot.val();
   if (data) {
@@ -786,13 +778,7 @@ onValue(dbVocabRef, (snapshot) => {
 function doResetCore(withVocab = true) {
   document.querySelectorAll('.task-card.completed').forEach(c => c.classList.remove('completed'));
   document.getElementById('done-banner').classList.remove('show');
-  
-  // Update data kosong ke Firebase
-  set(dbTodoRef, {
-    completedIds: [],
-    lastUpdatedDate: getWIBDate()
-  });
-
+  set(dbTodoRef, { completedIds: [], lastUpdatedDate: getWIBDate() });
   if (withVocab) {
     document.getElementById('vocab-word').value = '';
     document.getElementById('vocab-meaning').value = '';
@@ -812,4 +798,3 @@ window.manualReset = function() {
 </script>
 </body>
 </html>
-
