@@ -199,6 +199,285 @@ body {
 @keyframes bannerReveal { from{opacity:0;transform:scale(.92) translateY(10px)} to{opacity:1;transform:scale(1) translateY(0)} }
 @keyframes glowPulse    { 0%,100%{opacity:.6} 50%{opacity:1} }
 @keyframes dotBlink     { 0%,100%{opacity:1} 50%{opacity:.3} }
+@keyframes authCardIn   { from{opacity:0;transform:translateY(28px) scale(.95)} to{opacity:1;transform:translateY(0) scale(1)} }
+@keyframes authBgIn     { from{opacity:0} to{opacity:1} }
+@keyframes formSwitch   { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+@keyframes spinLoader   { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+/* ══════════════════════════════════════════
+   AUTH SCREEN
+══════════════════════════════════════════ */
+#auth-screen {
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 5%;
+  animation: authBgIn .4s var(--ease-out) both;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  background: var(--glass-b);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: 42px 38px 38px;
+  backdrop-filter: blur(36px) saturate(240%);
+  -webkit-backdrop-filter: blur(36px) saturate(240%);
+  box-shadow: var(--shadow-xl), 0 0 0 1px rgba(109,63,200,0.06);
+  position: relative;
+  overflow: hidden;
+  animation: authCardIn .52s var(--ease-spring) .08s both;
+  transition: background .4s, border-color .4s;
+}
+
+/* Top accent gradient line */
+.auth-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2.5px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--accent-3), transparent);
+  border-radius: 3px 3px 0 0;
+}
+
+/* Inner shine line */
+.auth-card::after {
+  content: '';
+  position: absolute;
+  top: 2.5px; left: 8%; right: 8%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.80), transparent);
+}
+
+/* Auth card header row */
+.auth-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.auth-logo {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -.5px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--text);
+  transition: color .35s;
+}
+.auth-logo em { font-style: normal; color: var(--accent); }
+
+/* Tiny theme toggle on auth card */
+.auth-theme-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid var(--glass-border2);
+  background: var(--glass);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  transition: all var(--dur-base) var(--ease-spring);
+  box-shadow: var(--shadow-sm);
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+}
+.auth-theme-btn:hover  { transform: scale(1.08); background: var(--glass-h); }
+.auth-theme-btn:active { transform: scale(.94); }
+
+.auth-subtitle {
+  font-size: 12px;
+  color: var(--text-3);
+  font-weight: 600;
+  letter-spacing: .3px;
+  margin-bottom: 30px;
+  transition: color .35s;
+}
+
+/* Tab Toggle */
+.auth-tabs {
+  display: flex;
+  background: var(--glass);
+  border: 1px solid var(--glass-border2);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  gap: 4px;
+  margin-bottom: 26px;
+  transition: background .4s, border-color .4s;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 10px 16px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: all var(--dur-base) var(--ease-spring);
+  letter-spacing: .2px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.auth-tab.active {
+  background: var(--glass-b);
+  color: var(--accent);
+  box-shadow: var(--shadow-sm);
+  border-color: var(--accent-border);
+}
+
+.auth-tab:not(.active):hover {
+  color: var(--text-2);
+  background: var(--glass-h);
+}
+
+/* Auth Form */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.auth-field label {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text-3);
+  transition: color .35s;
+}
+
+.auth-input {
+  width: 100%;
+  background: rgba(255,255,255,0.55);
+  border: 1.5px solid rgba(109,63,200,0.14);
+  color: var(--text);
+  padding: 13px 16px;
+  border-radius: var(--radius-md);
+  font-size: 14.5px;
+  font-family: 'Syne', sans-serif;
+  transition: border-color var(--dur-base), box-shadow var(--dur-base), background var(--dur-base), color .35s;
+  outline: none;
+}
+
+[data-theme="dark"] .auth-input {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(109,63,200,0.22);
+}
+
+.auth-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3.5px rgba(109,63,200,0.13);
+  background: rgba(255,255,255,0.96);
+}
+
+[data-theme="dark"] .auth-input:focus {
+  background: rgba(30,22,68,0.96);
+}
+
+.auth-input::placeholder { color: var(--text-4); }
+
+/* Auth Submit Button */
+.auth-submit {
+  width: 100%;
+  padding: 14.5px 20px;
+  margin-top: 4px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: linear-gradient(112deg, var(--accent) 0%, var(--accent-2) 100%);
+  color: #fff;
+  font-family: 'Syne', sans-serif;
+  font-size: 14.5px;
+  font-weight: 800;
+  letter-spacing: .25px;
+  cursor: pointer;
+  transition: all var(--dur-base) var(--ease-spring);
+  box-shadow: 0 4px 22px rgba(109,63,200,0.32), 0 1px 0 rgba(255,255,255,0.15) inset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-submit::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.14), transparent);
+  transition: left .5s ease;
+}
+
+.auth-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 34px rgba(109,63,200,0.40), 0 1px 0 rgba(255,255,255,0.15) inset;
+}
+.auth-submit:hover::before { left: 100%; }
+.auth-submit:active { transform: scale(.97) translateY(0); }
+
+.auth-submit.loading {
+  opacity: .7;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+/* Loader spinner inside button */
+.btn-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2.5px solid rgba(255,255,255,0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spinLoader .7s linear infinite;
+  display: none;
+}
+.auth-submit.loading .btn-spinner { display: block; }
+.auth-submit.loading .btn-text   { opacity: .6; }
+
+/* Auth footer info */
+.auth-footer-info {
+  margin-top: 22px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-4);
+  font-weight: 600;
+  letter-spacing: .2px;
+  transition: color .35s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.auth-footer-info::before,
+.auth-footer-info::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--glass-border2);
+  border-radius: 1px;
+}
 
 /* ══════════════════════════════════════════
    NAVIGATION
@@ -223,7 +502,7 @@ nav {
 .nav-left {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 10px;
 }
 
 .logo {
@@ -266,6 +545,27 @@ nav {
 }
 .theme-btn:hover  { transform: scale(1.08); box-shadow: var(--shadow-md); background: var(--glass-h); }
 .theme-btn:active { transform: scale(.94); }
+
+/* ─── Logout Button ─── */
+.logout-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  border: 1px solid var(--red-border);
+  background: var(--red-bg);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--dur-base) var(--ease-spring);
+  box-shadow: var(--shadow-sm);
+  -webkit-tap-highlight-color: transparent;
+  color: var(--red);
+  flex-shrink: 0;
+}
+.logout-btn:hover  { transform: scale(1.08); box-shadow: var(--shadow-md); background: rgba(220,38,38,0.12); border-color: rgba(220,38,38,0.38); }
+.logout-btn:active { transform: scale(.94); }
+.logout-btn svg    { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 
 .clock-block {
   display: flex;
@@ -320,6 +620,7 @@ nav {
   color: var(--text);
   white-space: nowrap;
   animation: toastIn .42s var(--ease-spring) both;
+  max-width: 90vw;
 }
 
 /* ══════════════════════════════════════════
@@ -989,6 +1290,11 @@ nav {
 /* Shake animation on reset */
 .shaking { animation: shake .5s ease !important; }
 
+/* Dashboard screen enter animation */
+#dashboard-screen.screen-in {
+  animation: fadeUp .5s var(--ease-smooth) both;
+}
+
 /* ══════════════════════════════════════════
    RESPONSIVE — TABLET
 ══════════════════════════════════════════ */
@@ -998,6 +1304,8 @@ nav {
   #live-time { font-size: 13px; padding: 5px 11px; letter-spacing: .9px; }
   #live-greeting { font-size: 9px; }
   .theme-btn { width: 34px; height: 34px; font-size: 14px; }
+  .logout-btn { width: 34px; height: 34px; }
+  .logout-btn svg { width: 15px; height: 15px; }
 
   .hero { padding: 52px 5% 32px; }
   .hero h1 { letter-spacing: -.8px; margin-bottom: 24px; }
@@ -1022,6 +1330,9 @@ nav {
   .date-badge { font-size: 10.5px; bottom: 14px; padding: 7px 16px; }
   .reset-info { font-size: 11px; }
   .done-banner { padding: 18px 22px; gap: 12px; }
+
+  /* Auth responsive */
+  .auth-card { padding: 32px 26px 28px; }
 }
 
 /* ══════════════════════════════════════════
@@ -1029,7 +1340,7 @@ nav {
 ══════════════════════════════════════════ */
 @media (max-width: 480px) {
   nav { padding: 11px 4%; }
-  .nav-left { gap: 12px; }
+  .nav-left { gap: 8px; }
   .logo { font-size: 14.5px; }
   #live-time { font-size: 12px; padding: 4px 10px; }
 
@@ -1054,12 +1365,20 @@ nav {
   .action-wrap { padding: 40px 0 0; gap: 11px; }
 
   .done-banner { flex-direction: column; text-align: center; padding: 18px 18px; }
+
+  /* Auth mobile */
+  .auth-card { padding: 28px 20px 24px; border-radius: var(--radius-lg); }
+  .auth-input { font-size: 14px; padding: 12px 14px; }
+  .auth-submit { padding: 13px 18px; font-size: 14px; }
 }
 </style>
 </head>
 <body>
 
-<!-- Background Layers -->
+<!-- ════════════════════════════════════════
+     PERSISTENT BACKGROUND LAYERS
+     (Selalu tampil, di luar kedua screen)
+════════════════════════════════════════ -->
 <div class="bg-mesh"></div>
 <div class="bg-noise"></div>
 <div class="bg-dots"></div>
@@ -1069,171 +1388,285 @@ nav {
   <div class="ring ring-3"></div>
 </div>
 
-<!-- Confetti Container -->
+<!-- Confetti Container (selalu di atas) -->
 <div class="confetti-container" id="confetti-container"></div>
 
-<!-- ── NAV ── -->
-<nav>
-  <div class="nav-left">
-    <div class="logo">
-      <div class="logo-dot"></div>
-      Fanz<em>Routine</em>
-    </div>
-    <button class="theme-btn" id="theme-btn" title="Toggle Dark Mode" aria-label="Toggle dark mode">🌙</button>
-  </div>
-  <div class="clock-block">
-    <div id="live-time">00:00:00</div>
-    <div id="live-greeting">WIB</div>
-  </div>
-</nav>
+<!-- ════════════════════════════════════════
+     AUTH SCREEN
+     Tampil saat user BELUM login
+════════════════════════════════════════ -->
+<div id="auth-screen">
+  <div class="auth-card">
 
-<!-- ── HERO ── -->
-<section class="hero">
-  <div class="hero-tag"><span class="dot"></span>Daily Productive Workspace</div>
-  <h1>Innovating Tomorrow,<br><span class="grad">Building Productive Today.</span></h1>
+    <!-- Header: Logo + Theme Toggle -->
+    <div class="auth-header">
+      <div class="auth-logo">
+        <div class="logo-dot"></div>
+        Fanz<em>Routine</em>
+      </div>
+      <button class="auth-theme-btn" id="auth-theme-btn" title="Toggle Dark Mode" aria-label="Toggle dark mode">🌙</button>
+    </div>
 
-  <div class="progress-wrap">
-    <div class="progress-row">
-      <span class="progress-label">Task Progress</span>
-      <span id="progress-count">0 / 10 selesai</span>
-    </div>
-    <div class="pbar-bg">
-      <div class="pbar-fill" id="pbar"></div>
-    </div>
-  </div>
+    <p class="auth-subtitle">Your Daily Productive Workspace — Selamat datang!</p>
 
-  <div class="stats-row">
-    <div class="stat-pill"><span class="val" id="stat-done">0</span><span class="lbl">Selesai</span></div>
-    <div class="stat-pill"><span class="val" id="stat-remain">10</span><span class="lbl">Tersisa</span></div>
-    <div class="stat-pill"><span class="val" id="stat-pct">0%</span><span class="lbl">Progress</span></div>
-  </div>
-</section>
+    <!-- Tab Toggle: Login / Register -->
+    <div class="auth-tabs" role="tablist">
+      <button class="auth-tab active" id="tab-login"    role="tab" onclick="switchTab('login')">Login</button>
+      <button class="auth-tab"        id="tab-register" role="tab" onclick="switchTab('register')">Buat Akun</button>
+    </div>
 
-<!-- ── MAIN CONTENT ── -->
-<main class="main">
+    <!-- ── FORM LOGIN ── -->
+    <div id="form-login" class="auth-form" role="tabpanel">
+      <div class="auth-field">
+        <label for="login-email">Email</label>
+        <input
+          type="email"
+          id="login-email"
+          class="auth-input"
+          placeholder="email@kamu.com"
+          autocomplete="email"
+          inputmode="email"
+        >
+      </div>
+      <div class="auth-field">
+        <label for="login-password">Password</label>
+        <input
+          type="password"
+          id="login-password"
+          class="auth-input"
+          placeholder="••••••••"
+          autocomplete="current-password"
+        >
+      </div>
+      <button class="auth-submit" id="login-submit-btn" onclick="handleLogin()">
+        <div class="btn-spinner"></div>
+        <span class="btn-text">Masuk ke Dashboard →</span>
+      </button>
+    </div>
 
-  <!-- Vocab Widget -->
-  <div class="vocab-widget">
-    <div class="vocab-label">🚀 Word of the Day — English Vocabulary</div>
-    <div class="vocab-grid">
-      <input type="text" id="vocab-word"    class="vocab-input" placeholder="Kata/Phrase baru… (mis. Impeccable)"          oninput="saveVocab()">
-      <input type="text" id="vocab-meaning" class="vocab-input" placeholder="Artinya… (mis. Sempurna, tanpa cela)"          oninput="saveVocab()">
+    <!-- ── FORM REGISTER ── -->
+    <div id="form-register" class="auth-form" style="display:none;" role="tabpanel">
+      <div class="auth-field">
+        <label for="reg-email">Email</label>
+        <input
+          type="email"
+          id="reg-email"
+          class="auth-input"
+          placeholder="email@kamu.com"
+          autocomplete="email"
+          inputmode="email"
+        >
+      </div>
+      <div class="auth-field">
+        <label for="reg-password">Password</label>
+        <input
+          type="password"
+          id="reg-password"
+          class="auth-input"
+          placeholder="Minimal 6 karakter"
+          autocomplete="new-password"
+        >
+      </div>
+      <button class="auth-submit" id="register-submit-btn" onclick="handleRegister()">
+        <div class="btn-spinner"></div>
+        <span class="btn-text">Daftar Sekarang →</span>
+      </button>
     </div>
-  </div>
 
-  <!-- ── PAGI ── -->
-  <div class="section-head">
-    <div class="section-icon">🌅</div>
-    <div class="section-text">
-      <h2>Pagi Hari — <em>Fokus & Upgrade</em></h2>
-      <p>Memulai hari saat pikiran dalam kondisi paling prima.</p>
-    </div>
-  </div>
-  <div class="task-grid">
-    <div class="task-card" data-id="1" onclick="toggle(this)">
-      <div class="card-top"><span class="time-chip">05:00 – 06:00</span><div class="chk"><span class="chk-icon">✓</span></div></div>
-      <div class="card-title">Bangun Pagi & Rutinitas Awal</div>
-      <div class="card-desc">Ibadah pagi, peregangan fisik ringan, mandi segar, dan minum air putih hangat untuk mengaktifkan tubuh.</div>
-    </div>
-    <div class="task-card" data-id="2" onclick="toggle(this)">
-      <div class="card-top"><span class="time-chip">06:00 – 07:00</span><div class="chk"><span class="chk-icon">✓</span></div></div>
-      <div class="card-title">Health & Mindset Prep</div>
-      <div class="card-desc">Sarapan sehat bergizi dan menghirup udara pagi segar. Jauhkan smartphone — bangun mindset tanpa distraksi.</div>
-    </div>
-    <div class="task-card highlighted" data-id="3" onclick="toggle(this)">
-      <div class="card-top"><span class="time-chip">07:00 – 09:00</span><div class="chk"><span class="chk-icon">✓</span></div></div>
-      <div class="card-title">Deep Work: Asah Bahasa Inggris</div>
-      <div class="card-desc">Baca dokumentasi teknis, latihan listening/podcast, catat vocab baru — tanpa subtitle Indonesia.</div>
-    </div>
-  </div>
+    <!-- Footer info -->
+    <div class="auth-footer-info">Aman · Terenkripsi · Firebase Auth</div>
 
-  <!-- ── SIANG ── -->
-  <div class="section-head">
-    <div class="section-icon">☀️</div>
-    <div class="section-text">
-      <h2>Siang Hari — <em>Karier & Hasil</em></h2>
-      <p>Eksekusi proyek kreatif komersial dengan produktivitas maksimal.</p>
-    </div>
   </div>
-  <div class="task-grid">
-    <div class="task-card highlighted" data-id="4" onclick="toggle(this)">
-      <div class="card-top"><span class="time-chip">09:00 – 12:00</span><div class="chk"><span class="chk-icon">✓</span></div></div>
-      <div class="card-title">Freelance Work: Proyek Klien</div>
-      <div class="card-desc">Fokus penuh garap aset kreatif — video editing (CapCut) atau graphic design (Affinity Designer).</div>
-    </div>
-    <div class="task-card" data-id="5" onclick="toggle(this)">
-      <div class="card-top"><span class="time-chip">12:00 – 13:30</span><div class="chk"><span class="chk-icon">✓</span></div></div>
-      <div class="card-title">Makan Siang & Power Nap</div>
-      <div class="card-desc">Istirahat total, ibadah siang, makan siang teratur, lalu 15–20 menit tidur siang kilat untuk recharge.</div>
-    </div>
-    <div class="task-card" data-id="6" onclick="toggle(this)">
-      <div class="card-top"><span class="time-chip">13:30 – 15:30</span><div class="chk"><span class="chk-icon">✓</span></div></div>
-      <div class="card-title">Maintenance & Lab Jaringan</div>
-      <div class="card-desc">Selesaikan sisa revisi freelance atau eksperimen troubleshooting sistem & simulasi jaringan virtual.</div>
-    </div>
-  </div>
+</div>
 
-  <!-- ── SORE & MALAM ── -->
-  <div class="section-head">
-    <div class="section-icon">🌃</div>
-    <div class="section-text">
-      <h2>Sore & Malam — <em>Evaluasi & Reward</em></h2>
-      <p>Seimbangkan administrasi, kebugaran fisik, relaksasi, dan istirahat pemulihan.</p>
-    </div>
-  </div>
-  <div class="task-grid">
-    <div class="task-card" data-id="7" onclick="toggle(this)">
-      <div class="card-top"><span class="time-chip">15:30 – 16:30</span><div class="chk"><span class="chk-icon">✓</span></div></div>
-      <div class="card-title">Administrasi & Portofolio</div>
-      <div class="card-desc">Balas pesan klien, cari proyek baru, dan rapikan arsip portofolio karya terbaik.</div>
-    </div>
-    <div class="task-card" data-id="8" onclick="toggle(this)">
-      <div class="card-top"><span class="time-chip">16:30 – 18:00</span><div class="chk"><span class="chk-icon">✓</span></div></div>
-      <div class="card-title">Olahraga & Mandi Sore</div>
-      <div class="card-desc">Workout ringan di rumah — cegah badan kaku setelah duduk di depan PC seharian.</div>
-    </div>
-    <div class="task-card" data-id="9" onclick="toggle(this)">
-      <div class="card-top"><span class="time-chip">19:30 – 21:30</span><div class="chk"><span class="chk-icon">✓</span></div></div>
-      <div class="card-title">Gaming / Strategic Refreshing</div>
-      <div class="card-desc">Waktunya lepas penat — bermain game kompetitif taktis favorit atau mabar bareng teman.</div>
-    </div>
-    <div class="task-card" data-id="10" onclick="toggle(this)">
-      <div class="card-top"><span class="time-chip">21:30 – 22:00</span><div class="chk"><span class="chk-icon">✓</span></div></div>
-      <div class="card-title">Review & Sleep Preparation</div>
-      <div class="card-desc">Evaluasi target harian, susun to-do list esok, bersihkan workspace, lalu tidur tepat jam 22:00.</div>
-    </div>
-  </div>
 
-  <!-- Done Banner -->
-  <div class="done-banner" id="done-banner">
-    <span class="done-icon">🎉</span>
-    <div>
-      <strong>Semua Task Selesai!</strong>
-      <p>Luar biasa — produktivitas kamu 100% hari ini. Istirahat dengan tenang!</p>
+<!-- ════════════════════════════════════════
+     DASHBOARD SCREEN
+     Tampil setelah user LOGIN BERHASIL
+     (disembunyikan saat pertama kali load)
+════════════════════════════════════════ -->
+<div id="dashboard-screen" style="display:none;">
+
+  <!-- ── NAV ── -->
+  <nav>
+    <div class="nav-left">
+      <div class="logo">
+        <div class="logo-dot"></div>
+        Fanz<em>Routine</em>
+      </div>
+      <!-- Dark Mode Toggle -->
+      <button class="theme-btn" id="theme-btn" title="Toggle Dark Mode" aria-label="Toggle dark mode">🌙</button>
+      <!-- Logout Button -->
+      <button class="logout-btn" id="logout-btn" onclick="handleLogout()" title="Logout" aria-label="Logout">
+        <svg viewBox="0 0 24 24">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+      </button>
     </div>
-  </div>
-
-  <!-- Actions -->
-  <div class="action-wrap">
-    <div class="reset-info">
-      <span class="dot-live"></span>
-      Auto-reset aktif setiap tengah malam WIB (00:00 WIB)
+    <div class="clock-block">
+      <div id="live-time">00:00:00</div>
+      <div id="live-greeting">WIB</div>
     </div>
-    <button class="reset-btn" onclick="manualReset()">↺ Reset Manual Hari Baru</button>
-  </div>
+  </nav>
 
-</main>
+  <!-- ── HERO ── -->
+  <section class="hero">
+    <div class="hero-tag"><span class="dot"></span>Daily Productive Workspace</div>
+    <h1>Innovating Tomorrow,<br><span class="grad">Building Productive Today.</span></h1>
 
-<div class="date-badge" id="date-badge">Memuat...</div>
+    <div class="progress-wrap">
+      <div class="progress-row">
+        <span class="progress-label">Task Progress</span>
+        <span id="progress-count">0 / 10 selesai</span>
+      </div>
+      <div class="pbar-bg">
+        <div class="pbar-fill" id="pbar"></div>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-pill"><span class="val" id="stat-done">0</span><span class="lbl">Selesai</span></div>
+      <div class="stat-pill"><span class="val" id="stat-remain">10</span><span class="lbl">Tersisa</span></div>
+      <div class="stat-pill"><span class="val" id="stat-pct">0%</span><span class="lbl">Progress</span></div>
+    </div>
+  </section>
+
+  <!-- ── MAIN CONTENT ── -->
+  <main class="main">
+
+    <!-- Vocab Widget -->
+    <div class="vocab-widget">
+      <div class="vocab-label">🚀 Word of the Day — English Vocabulary</div>
+      <div class="vocab-grid">
+        <input type="text" id="vocab-word"    class="vocab-input" placeholder="Kata/Phrase baru… (mis. Impeccable)"    oninput="saveVocab()">
+        <input type="text" id="vocab-meaning" class="vocab-input" placeholder="Artinya… (mis. Sempurna, tanpa cela)"   oninput="saveVocab()">
+      </div>
+    </div>
+
+    <!-- ── PAGI ── -->
+    <div class="section-head">
+      <div class="section-icon">🌅</div>
+      <div class="section-text">
+        <h2>Pagi Hari — <em>Fokus & Upgrade</em></h2>
+        <p>Memulai hari saat pikiran dalam kondisi paling prima.</p>
+      </div>
+    </div>
+    <div class="task-grid">
+      <div class="task-card" data-id="1" onclick="toggle(this)">
+        <div class="card-top"><span class="time-chip">05:00 – 06:00</span><div class="chk"><span class="chk-icon">✓</span></div></div>
+        <div class="card-title">Bangun Pagi & Rutinitas Awal</div>
+        <div class="card-desc">Ibadah pagi, peregangan fisik ringan, mandi segar, dan minum air putih hangat untuk mengaktifkan tubuh.</div>
+      </div>
+      <div class="task-card" data-id="2" onclick="toggle(this)">
+        <div class="card-top"><span class="time-chip">06:00 – 07:00</span><div class="chk"><span class="chk-icon">✓</span></div></div>
+        <div class="card-title">Health & Mindset Prep</div>
+        <div class="card-desc">Sarapan sehat bergizi dan menghirup udara pagi segar. Jauhkan smartphone — bangun mindset tanpa distraksi.</div>
+      </div>
+      <div class="task-card highlighted" data-id="3" onclick="toggle(this)">
+        <div class="card-top"><span class="time-chip">07:00 – 09:00</span><div class="chk"><span class="chk-icon">✓</span></div></div>
+        <div class="card-title">Deep Work: Asah Bahasa Inggris</div>
+        <div class="card-desc">Baca dokumentasi teknis, latihan listening/podcast, catat vocab baru — tanpa subtitle Indonesia.</div>
+      </div>
+    </div>
+
+    <!-- ── SIANG ── -->
+    <div class="section-head">
+      <div class="section-icon">☀️</div>
+      <div class="section-text">
+        <h2>Siang Hari — <em>Karier & Hasil</em></h2>
+        <p>Eksekusi proyek kreatif komersial dengan produktivitas maksimal.</p>
+      </div>
+    </div>
+    <div class="task-grid">
+      <div class="task-card highlighted" data-id="4" onclick="toggle(this)">
+        <div class="card-top"><span class="time-chip">09:00 – 12:00</span><div class="chk"><span class="chk-icon">✓</span></div></div>
+        <div class="card-title">Freelance Work: Proyek Klien</div>
+        <div class="card-desc">Fokus penuh garap aset kreatif — video editing (CapCut) atau graphic design (Affinity Designer).</div>
+      </div>
+      <div class="task-card" data-id="5" onclick="toggle(this)">
+        <div class="card-top"><span class="time-chip">12:00 – 13:30</span><div class="chk"><span class="chk-icon">✓</span></div></div>
+        <div class="card-title">Makan Siang & Power Nap</div>
+        <div class="card-desc">Istirahat total, ibadah siang, makan siang teratur, lalu 15–20 menit tidur siang kilat untuk recharge.</div>
+      </div>
+      <div class="task-card" data-id="6" onclick="toggle(this)">
+        <div class="card-top"><span class="time-chip">13:30 – 15:30</span><div class="chk"><span class="chk-icon">✓</span></div></div>
+        <div class="card-title">Maintenance & Lab Jaringan</div>
+        <div class="card-desc">Selesaikan sisa revisi freelance atau eksperimen troubleshooting sistem & simulasi jaringan virtual.</div>
+      </div>
+    </div>
+
+    <!-- ── SORE & MALAM ── -->
+    <div class="section-head">
+      <div class="section-icon">🌃</div>
+      <div class="section-text">
+        <h2>Sore & Malam — <em>Evaluasi & Reward</em></h2>
+        <p>Seimbangkan administrasi, kebugaran fisik, relaksasi, dan istirahat pemulihan.</p>
+      </div>
+    </div>
+    <div class="task-grid">
+      <div class="task-card" data-id="7" onclick="toggle(this)">
+        <div class="card-top"><span class="time-chip">15:30 – 16:30</span><div class="chk"><span class="chk-icon">✓</span></div></div>
+        <div class="card-title">Administrasi & Portofolio</div>
+        <div class="card-desc">Balas pesan klien, cari proyek baru, dan rapikan arsip portofolio karya terbaik.</div>
+      </div>
+      <div class="task-card" data-id="8" onclick="toggle(this)">
+        <div class="card-top"><span class="time-chip">16:30 – 18:00</span><div class="chk"><span class="chk-icon">✓</span></div></div>
+        <div class="card-title">Olahraga & Mandi Sore</div>
+        <div class="card-desc">Workout ringan di rumah — cegah badan kaku setelah duduk di depan PC seharian.</div>
+      </div>
+      <div class="task-card" data-id="9" onclick="toggle(this)">
+        <div class="card-top"><span class="time-chip">19:30 – 21:30</span><div class="chk"><span class="chk-icon">✓</span></div></div>
+        <div class="card-title">Gaming / Strategic Refreshing</div>
+        <div class="card-desc">Waktunya lepas penat — bermain game kompetitif taktis favorit atau mabar bareng teman.</div>
+      </div>
+      <div class="task-card" data-id="10" onclick="toggle(this)">
+        <div class="card-top"><span class="time-chip">21:30 – 22:00</span><div class="chk"><span class="chk-icon">✓</span></div></div>
+        <div class="card-title">Review & Sleep Preparation</div>
+        <div class="card-desc">Evaluasi target harian, susun to-do list esok, bersihkan workspace, lalu tidur tepat jam 22:00.</div>
+      </div>
+    </div>
+
+    <!-- Done Banner -->
+    <div class="done-banner" id="done-banner">
+      <span class="done-icon">🎉</span>
+      <div>
+        <strong>Semua Task Selesai!</strong>
+        <p>Luar biasa — produktivitas kamu 100% hari ini. Istirahat dengan tenang!</p>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="action-wrap">
+      <div class="reset-info">
+        <span class="dot-live"></span>
+        Auto-reset aktif setiap tengah malam WIB (00:00 WIB)
+      </div>
+      <button class="reset-btn" onclick="manualReset()">↺ Reset Manual Hari Baru</button>
+    </div>
+
+  </main>
+
+  <!-- Date Badge -->
+  <div class="date-badge" id="date-badge">Memuat...</div>
+
+</div><!-- /#dashboard-screen -->
+
 
 <!-- ══════════════════════════════════════════
-     FIREBASE + APP LOGIC
+     FIREBASE + AUTH + APP LOGIC
 ══════════════════════════════════════════ -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { initializeApp }                                        from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getDatabase, ref, set, onValue }                      from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { getAuth, signInWithEmailAndPassword,
+         createUserWithEmailAndPassword,
+         onAuthStateChanged, signOut }                          from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-/* ── Firebase Init (unchanged) ── */
+/* ══════════════════════════════════════════
+   FIREBASE INIT
+══════════════════════════════════════════ */
 const firebaseConfig = {
   apiKey:            "AIzaSyCpsG6b5SmTV8qb_eP3RZvDFTKQBXrCQt0",
   authDomain:        "fanz-8e3ee.firebaseapp.com",
@@ -1244,39 +1677,62 @@ const firebaseConfig = {
   appId:             "1:1001215008191:web:ab892bb8fd36a7eef950a"
 };
 
-const app        = initializeApp(firebaseConfig);
-const db         = getDatabase(app);
-const dbTodoRef  = ref(db, 'finroutine/tasks');
-const dbVocabRef = ref(db, 'finroutine/vocab');
+const app  = initializeApp(firebaseConfig);
+const db   = getDatabase(app);
+const auth = getAuth(app);
 
-/* ── Constants ── */
+/* ══════════════════════════════════════════
+   GLOBAL STATE
+══════════════════════════════════════════ */
 const TOTAL = 10;
-let audioCtx = null;
+let audioCtx      = null;
 let confettiActive = false;
 
-/* ── Dark Mode Toggle ── */
-const themeBtn = document.getElementById('theme-btn');
-const root = document.documentElement;
+// DB Refs — dinamis berdasarkan UID (null sampai user login)
+let dbTodoRef  = null;
+let dbVocabRef = null;
 
-// Restore saved preference
+// Unsubscribe functions untuk Database listeners
+let unsubTodo  = null;
+let unsubVocab = null;
+
+/* ══════════════════════════════════════════
+   THEME TOGGLE (Sinkron untuk kedua layar)
+══════════════════════════════════════════ */
+const root      = document.documentElement;
+const themeBtn  = document.getElementById('theme-btn');       // di nav dashboard
+const authTheme = document.getElementById('auth-theme-btn'); // di auth card
+
+// Restore preferensi tema tersimpan
 const savedTheme = localStorage.getItem('fanzTheme') || 'light';
 root.setAttribute('data-theme', savedTheme);
-themeBtn.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+const themeIcon = savedTheme === 'dark' ? '☀️' : '🌙';
+themeBtn.textContent  = themeIcon;
+authTheme.textContent = themeIcon;
 
-themeBtn.addEventListener('click', () => {
+function toggleTheme() {
   const isDark = root.getAttribute('data-theme') === 'dark';
   const next   = isDark ? 'light' : 'dark';
   root.setAttribute('data-theme', next);
-  themeBtn.textContent = next === 'dark' ? '☀️' : '🌙';
+  const icon = next === 'dark' ? '☀️' : '🌙';
+  themeBtn.textContent  = icon;
+  authTheme.textContent = icon;
   localStorage.setItem('fanzTheme', next);
-});
+}
 
-/* ── WIB Date Utility ── */
+themeBtn.addEventListener('click',  toggleTheme);
+authTheme.addEventListener('click', toggleTheme);
+
+/* ══════════════════════════════════════════
+   UTILITY: WIB DATE
+══════════════════════════════════════════ */
 function getWIBDate() {
   return new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Jakarta' });
 }
 
-/* ── Toast ── */
+/* ══════════════════════════════════════════
+   UTILITY: TOAST NOTIFICATION
+══════════════════════════════════════════ */
 function showToast(msg) {
   const old = document.getElementById('toast-el');
   if (old) old.remove();
@@ -1293,7 +1749,9 @@ function showToast(msg) {
   }, 4200);
 }
 
-/* ── Clock ── */
+/* ══════════════════════════════════════════
+   CLOCK (selalu berjalan, elemen di DOM)
+══════════════════════════════════════════ */
 function clock() {
   const wib = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }));
   const h = String(wib.getHours()).padStart(2,'0');
@@ -1328,7 +1786,9 @@ function updateBadge() {
 updateBadge();
 setInterval(updateBadge, 60000);
 
-/* ── Audio: Ping (optimized, lazy AudioContext) ── */
+/* ══════════════════════════════════════════
+   AUDIO: Ping & Victory Fanfare
+══════════════════════════════════════════ */
 function ping(isComplete) {
   try {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1344,20 +1804,17 @@ function ping(isComplete) {
       osc.frequency.exponentialRampToValueAtTime(1046.5, now + .18);
       gain.gain.setValueAtTime(.07, now);
       gain.gain.exponentialRampToValueAtTime(.001, now + .30);
-      osc.start(now);
-      osc.stop(now + .30);
+      osc.start(now); osc.stop(now + .30);
     } else {
       osc.type = 'sine';
       osc.frequency.setValueAtTime(880, now);
       gain.gain.setValueAtTime(.045, now);
       gain.gain.exponentialRampToValueAtTime(.001, now + .16);
-      osc.start(now);
-      osc.stop(now + .16);
+      osc.start(now); osc.stop(now + .16);
     }
   } catch(e) {}
 }
 
-/* ── Audio: Victory fanfare (all done!) ── */
 function playVictorySound() {
   try {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1373,13 +1830,14 @@ function playVictorySound() {
       gain.gain.exponentialRampToValueAtTime(.001, now + .30);
       osc.connect(gain);
       gain.connect(audioCtx.destination);
-      osc.start(now);
-      osc.stop(now + .32);
+      osc.start(now); osc.stop(now + .32);
     });
   } catch(e) {}
 }
 
-/* ── Confetti ── */
+/* ══════════════════════════════════════════
+   CONFETTI
+══════════════════════════════════════════ */
 function launchConfetti() {
   if (confettiActive) return;
   confettiActive = true;
@@ -1387,7 +1845,6 @@ function launchConfetti() {
   const colors = ['#6d3fc8','#4f8ef7','#e879a0','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4'];
   const shapes = ['2px','50%','0'];
   const count  = 90;
-
   for (let i = 0; i < count; i++) {
     const el = document.createElement('div');
     el.className = 'confetti-piece';
@@ -1398,23 +1855,18 @@ function launchConfetti() {
     const delay = Math.random() * 1.8;
     const dur   = Math.random() * 2 + 2;
     el.style.cssText = `
-      left:${left}%;
-      width:${size}px;
-      height:${size}px;
-      background:${color};
-      border-radius:${shape};
-      animation-duration:${dur}s;
-      animation-delay:${delay}s;
+      left:${left}%;width:${size}px;height:${size}px;
+      background:${color};border-radius:${shape};
+      animation-duration:${dur}s;animation-delay:${delay}s;
     `;
     container.appendChild(el);
   }
-  setTimeout(() => {
-    container.innerHTML = '';
-    confettiActive = false;
-  }, 5500);
+  setTimeout(() => { container.innerHTML = ''; confettiActive = false; }, 5500);
 }
 
-/* ── OPTIMISTIC UI TOGGLE (unchanged logic) ── */
+/* ══════════════════════════════════════════
+   OPTIMISTIC UI TOGGLE
+══════════════════════════════════════════ */
 window.toggle = function(card) {
   card.classList.toggle('completed');
   ping(card.classList.contains('completed'));
@@ -1422,11 +1874,11 @@ window.toggle = function(card) {
   saveStateToCloud();
 };
 
-/* ── Update Progress ── */
+/* ── Update Progress Bar & Stats ── */
 function updateProgress() {
   const done = document.querySelectorAll('.task-card.completed').length;
   const pct  = Math.round((done / TOTAL) * 100);
-  document.getElementById('pbar').style.width          = pct + '%';
+  document.getElementById('pbar').style.width           = pct + '%';
   document.getElementById('progress-count').textContent = `${done} / ${TOTAL} selesai`;
   document.getElementById('stat-done').textContent      = done;
   document.getElementById('stat-remain').textContent    = TOTAL - done;
@@ -1445,57 +1897,76 @@ function updateProgress() {
   }
 }
 
-/* ── Save to Firebase ── */
+/* ── Save Tasks ke Firebase (User-Specific) ── */
 function saveStateToCloud() {
+  if (!dbTodoRef) return; // Guard: belum login
   const ids = [];
   document.querySelectorAll('.task-card.completed').forEach(c => ids.push(c.dataset.id));
   set(dbTodoRef, { completedIds: ids, lastUpdatedDate: getWIBDate() });
 }
 
-/* ── Vocab Save ── */
+/* ── Save Vocab ke Firebase ── */
 window.saveVocab = function() {
+  if (!dbVocabRef) return; // Guard: belum login
   const word    = document.getElementById('vocab-word').value;
   const meaning = document.getElementById('vocab-meaning').value;
   set(dbVocabRef, { word, meaning });
 };
 
-/* ── Firebase Listeners (unchanged) ── */
-onValue(dbTodoRef, (snapshot) => {
-  const data = snapshot.val();
-  if (data) {
-    const today = getWIBDate();
-    if (data.lastUpdatedDate && data.lastUpdatedDate !== today) {
-      doResetCore(false);
-      return;
-    }
-    document.querySelectorAll('.task-card').forEach(card => {
-      const id = card.dataset.id;
-      if (data.completedIds && data.completedIds.includes(id)) {
-        card.classList.add('completed');
-      } else {
-        card.classList.remove('completed');
+/* ══════════════════════════════════════════
+   DATABASE LISTENERS (dipasang setelah login)
+══════════════════════════════════════════ */
+function attachDbListeners() {
+  // Listener tasks
+  unsubTodo = onValue(dbTodoRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      const today = getWIBDate();
+      if (data.lastUpdatedDate && data.lastUpdatedDate !== today) {
+        doResetCore(false);
+        return;
       }
-    });
-  } else {
-    document.querySelectorAll('.task-card').forEach(card => card.classList.remove('completed'));
-  }
-  updateProgress();
-});
+      document.querySelectorAll('.task-card').forEach(card => {
+        const id = card.dataset.id;
+        if (data.completedIds && data.completedIds.includes(id)) {
+          card.classList.add('completed');
+        } else {
+          card.classList.remove('completed');
+        }
+      });
+    } else {
+      document.querySelectorAll('.task-card').forEach(card => card.classList.remove('completed'));
+    }
+    updateProgress();
+  });
 
-onValue(dbVocabRef, (snapshot) => {
-  const data = snapshot.val();
-  if (data) {
-    document.getElementById('vocab-word').value    = data.word    || '';
-    document.getElementById('vocab-meaning').value = data.meaning || '';
-  }
-});
+  // Listener vocab
+  unsubVocab = onValue(dbVocabRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      document.getElementById('vocab-word').value    = data.word    || '';
+      document.getElementById('vocab-meaning').value = data.meaning || '';
+    }
+  });
+}
 
-/* ── Reset Core (unchanged) ── */
+/* ── Detach semua listeners (saat logout) ── */
+function detachDbListeners() {
+  if (unsubTodo)  { unsubTodo();  unsubTodo  = null; }
+  if (unsubVocab) { unsubVocab(); unsubVocab = null; }
+  dbTodoRef  = null;
+  dbVocabRef = null;
+}
+
+/* ══════════════════════════════════════════
+   RESET CORE
+══════════════════════════════════════════ */
 function doResetCore(withVocab = true) {
+  if (!dbTodoRef) return;
   document.querySelectorAll('.task-card.completed').forEach(c => c.classList.remove('completed'));
   document.getElementById('done-banner').classList.remove('show');
   set(dbTodoRef, { completedIds: [], lastUpdatedDate: getWIBDate() });
-  if (withVocab) {
+  if (withVocab && dbVocabRef) {
     document.getElementById('vocab-word').value    = '';
     document.getElementById('vocab-meaning').value = '';
     set(dbVocabRef, { word: '', meaning: '' });
@@ -1503,7 +1974,6 @@ function doResetCore(withVocab = true) {
   updateProgress();
 }
 
-/* ── Manual Reset ── */
 window.manualReset = function() {
   if (!confirm('Reset semua centangan untuk memulai hari baru?')) return;
   doResetCore(true);
@@ -1511,6 +1981,226 @@ window.manualReset = function() {
   setTimeout(() => document.body.classList.remove('shaking'), 520);
   showToast('✅ Dashboard berhasil direset!');
 };
+
+/* ══════════════════════════════════════════
+   SCREEN TRANSITION HELPERS
+══════════════════════════════════════════ */
+function showAuthScreen() {
+  const dash = document.getElementById('dashboard-screen');
+  const auth = document.getElementById('auth-screen');
+
+  // Sembunyikan dashboard
+  dash.style.display = 'none';
+  dash.classList.remove('screen-in');
+
+  // Tampilkan auth dengan re-trigger animasi
+  auth.style.display = 'flex';
+  auth.style.animation = 'none';
+  void auth.offsetWidth; // force reflow
+  auth.style.animation = '';
+  // Juga re-trigger animasi card
+  const card = auth.querySelector('.auth-card');
+  card.style.animation = 'none';
+  void card.offsetWidth;
+  card.style.animation = '';
+}
+
+function showDashboardScreen() {
+  const dash = document.getElementById('dashboard-screen');
+  const auth = document.getElementById('auth-screen');
+
+  // Sembunyikan auth
+  auth.style.display = 'none';
+
+  // Tampilkan dashboard dengan animasi masuk
+  dash.style.display = 'block';
+  dash.classList.remove('screen-in');
+  void dash.offsetWidth; // force reflow
+  dash.classList.add('screen-in');
+}
+
+/* ══════════════════════════════════════════
+   FIREBASE AUTH — PENJAGA GERBANG UTAMA
+   onAuthStateChanged menentukan layar mana
+   yang ditampilkan dan listener mana aktif
+══════════════════════════════════════════ */
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    // ── USER SUDAH LOGIN ──
+    // Set DB refs ke jalur user-spesifik (per UID)
+    dbTodoRef  = ref(db, 'users/' + user.uid + '/tasks');
+    dbVocabRef = ref(db, 'users/' + user.uid + '/vocab');
+
+    // Pasang listener Database
+    attachDbListeners();
+
+    // Tampilkan dashboard
+    showDashboardScreen();
+
+  } else {
+    // ── USER BELUM / SUDAH LOGOUT ──
+    // Lepas semua listener agar tidak ada "Permission Denied"
+    detachDbListeners();
+
+    // Bersihkan state UI
+    document.querySelectorAll('.task-card.completed').forEach(c => c.classList.remove('completed'));
+    document.getElementById('done-banner').classList.remove('show');
+    updateProgress();
+
+    // Tampilkan layar login
+    showAuthScreen();
+  }
+});
+
+/* ══════════════════════════════════════════
+   AUTH SCREEN: TAB SWITCHER
+══════════════════════════════════════════ */
+window.switchTab = function(tab) {
+  const loginForm = document.getElementById('form-login');
+  const regForm   = document.getElementById('form-register');
+  const loginTab  = document.getElementById('tab-login');
+  const regTab    = document.getElementById('tab-register');
+
+  if (tab === 'login') {
+    loginForm.style.display = 'flex';
+    regForm.style.display   = 'none';
+    loginTab.classList.add('active');
+    regTab.classList.remove('active');
+    // Re-trigger animasi form
+    loginForm.style.animation = 'none';
+    void loginForm.offsetWidth;
+    loginForm.style.animation = 'formSwitch .3s var(--ease-smooth) both';
+  } else {
+    loginForm.style.display = 'none';
+    regForm.style.display   = 'flex';
+    loginTab.classList.remove('active');
+    regTab.classList.add('active');
+    // Re-trigger animasi form
+    regForm.style.animation = 'none';
+    void regForm.offsetWidth;
+    regForm.style.animation = 'formSwitch .3s var(--ease-smooth) both';
+  }
+};
+
+/* ══════════════════════════════════════════
+   AUTH ERROR MAPPER — Pesan ramah pengguna
+══════════════════════════════════════════ */
+function getAuthErrorMsg(code) {
+  const map = {
+    'auth/user-not-found':         '❌ Email tidak terdaftar. Silakan buat akun baru.',
+    'auth/wrong-password':         '❌ Password salah. Silakan coba lagi.',
+    'auth/invalid-credential':     '❌ Email atau password salah. Periksa kembali.',
+    'auth/email-already-in-use':   '❌ Email sudah terdaftar. Silakan gunakan opsi Login.',
+    'auth/weak-password':          '❌ Password terlalu lemah. Minimal 6 karakter.',
+    'auth/invalid-email':          '❌ Format email tidak valid.',
+    'auth/too-many-requests':      '❌ Terlalu banyak percobaan gagal. Coba lagi nanti.',
+    'auth/network-request-failed': '❌ Koneksi gagal. Periksa jaringan internet kamu.',
+    'auth/operation-not-allowed':  '❌ Metode login ini belum diaktifkan di Firebase.',
+    'auth/user-disabled':          '❌ Akun ini telah dinonaktifkan.',
+  };
+  return map[code] || `❌ Terjadi kesalahan (${code}). Coba lagi.`;
+}
+
+/* ══════════════════════════════════════════
+   HANDLE LOGIN
+══════════════════════════════════════════ */
+window.handleLogin = async function() {
+  const emailEl = document.getElementById('login-email');
+  const passEl  = document.getElementById('login-password');
+  const btn     = document.getElementById('login-submit-btn');
+
+  const email = emailEl.value.trim();
+  const pass  = passEl.value;
+
+  // Validasi dasar
+  if (!email || !pass) {
+    showToast('⚠️ Isi email dan password terlebih dahulu.');
+    if (!email) emailEl.focus();
+    else passEl.focus();
+    return;
+  }
+
+  // Set loading state
+  btn.classList.add('loading');
+
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+    // onAuthStateChanged akan otomatis menampilkan dashboard
+  } catch (err) {
+    showToast(getAuthErrorMsg(err.code));
+    btn.classList.remove('loading');
+  }
+};
+
+/* ══════════════════════════════════════════
+   HANDLE REGISTER
+══════════════════════════════════════════ */
+window.handleRegister = async function() {
+  const emailEl = document.getElementById('reg-email');
+  const passEl  = document.getElementById('reg-password');
+  const btn     = document.getElementById('register-submit-btn');
+
+  const email = emailEl.value.trim();
+  const pass  = passEl.value;
+
+  // Validasi dasar
+  if (!email || !pass) {
+    showToast('⚠️ Isi email dan password terlebih dahulu.');
+    if (!email) emailEl.focus();
+    else passEl.focus();
+    return;
+  }
+
+  if (pass.length < 6) {
+    showToast('⚠️ Password minimal 6 karakter.');
+    passEl.focus();
+    return;
+  }
+
+  // Set loading state
+  btn.classList.add('loading');
+
+  try {
+    await createUserWithEmailAndPassword(auth, email, pass);
+    showToast('🎉 Akun berhasil dibuat! Selamat datang di FanzRoutine!');
+    // onAuthStateChanged akan otomatis menampilkan dashboard
+  } catch (err) {
+    showToast(getAuthErrorMsg(err.code));
+    btn.classList.remove('loading');
+  }
+};
+
+/* ══════════════════════════════════════════
+   HANDLE LOGOUT
+══════════════════════════════════════════ */
+window.handleLogout = async function() {
+  if (!confirm('Yakin ingin logout dari FanzRoutine?')) return;
+  try {
+    await signOut(auth);
+    showToast('👋 Sampai jumpa! Kamu berhasil logout.');
+    // onAuthStateChanged akan otomatis menampilkan auth screen
+    //   dan detachDbListeners() dipanggil di sana
+  } catch(err) {
+    showToast('❌ Gagal logout. Coba lagi.');
+  }
+};
+
+/* ══════════════════════════════════════════
+   KEYBOARD SHORTCUTS — Enter untuk submit
+══════════════════════════════════════════ */
+document.getElementById('login-password').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') window.handleLogin();
+});
+document.getElementById('login-email').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('login-password').focus();
+});
+document.getElementById('reg-password').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') window.handleRegister();
+});
+document.getElementById('reg-email').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('reg-password').focus();
+});
+
 </script>
 </body>
 </html>
