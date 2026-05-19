@@ -1375,10 +1375,6 @@ nav {
 </head>
 <body>
 
-<!-- ════════════════════════════════════════
-     PERSISTENT BACKGROUND LAYERS
-     (Selalu tampil, di luar kedua screen)
-════════════════════════════════════════ -->
 <div class="bg-mesh"></div>
 <div class="bg-noise"></div>
 <div class="bg-dots"></div>
@@ -1388,17 +1384,11 @@ nav {
   <div class="ring ring-3"></div>
 </div>
 
-<!-- Confetti Container (selalu di atas) -->
 <div class="confetti-container" id="confetti-container"></div>
 
-<!-- ════════════════════════════════════════
-     AUTH SCREEN
-     Tampil saat user BELUM login
-════════════════════════════════════════ -->
 <div id="auth-screen">
   <div class="auth-card">
 
-    <!-- Header: Logo + Theme Toggle -->
     <div class="auth-header">
       <div class="auth-logo">
         <div class="logo-dot"></div>
@@ -1409,13 +1399,11 @@ nav {
 
     <p class="auth-subtitle">Your Daily Productive Workspace — Selamat datang!</p>
 
-    <!-- Tab Toggle: Login / Register -->
     <div class="auth-tabs" role="tablist">
       <button class="auth-tab active" id="tab-login"    role="tab" onclick="switchTab('login')">Login</button>
       <button class="auth-tab"        id="tab-register" role="tab" onclick="switchTab('register')">Buat Akun</button>
     </div>
 
-    <!-- ── FORM LOGIN ── -->
     <div id="form-login" class="auth-form" role="tabpanel">
       <div class="auth-field">
         <label for="login-email">Email</label>
@@ -1444,7 +1432,6 @@ nav {
       </button>
     </div>
 
-    <!-- ── FORM REGISTER ── -->
     <div id="form-register" class="auth-form" style="display:none;" role="tabpanel">
       <div class="auth-field">
         <label for="reg-email">Email</label>
@@ -1473,30 +1460,21 @@ nav {
       </button>
     </div>
 
-    <!-- Footer info -->
     <div class="auth-footer-info">Aman · Terenkripsi · Firebase Auth</div>
 
   </div>
 </div>
 
 
-<!-- ════════════════════════════════════════
-     DASHBOARD SCREEN
-     Tampil setelah user LOGIN BERHASIL
-     (disembunyikan saat pertama kali load)
-════════════════════════════════════════ -->
 <div id="dashboard-screen" style="display:none;">
 
-  <!-- ── NAV ── -->
   <nav>
     <div class="nav-left">
       <div class="logo">
         <div class="logo-dot"></div>
         Fanz<em>Routine</em>
       </div>
-      <!-- Dark Mode Toggle -->
       <button class="theme-btn" id="theme-btn" title="Toggle Dark Mode" aria-label="Toggle dark mode">🌙</button>
-      <!-- Logout Button -->
       <button class="logout-btn" id="logout-btn" onclick="handleLogout()" title="Logout" aria-label="Logout">
         <svg viewBox="0 0 24 24">
           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
@@ -1511,7 +1489,6 @@ nav {
     </div>
   </nav>
 
-  <!-- ── HERO ── -->
   <section class="hero">
     <div class="hero-tag"><span class="dot"></span>Daily Productive Workspace</div>
     <h1>Innovating Tomorrow,<br><span class="grad">Building Productive Today.</span></h1>
@@ -1533,10 +1510,8 @@ nav {
     </div>
   </section>
 
-  <!-- ── MAIN CONTENT ── -->
   <main class="main">
 
-    <!-- Vocab Widget -->
     <div class="vocab-widget">
       <div class="vocab-label">🚀 Word of the Day — English Vocabulary</div>
       <div class="vocab-grid">
@@ -1545,7 +1520,6 @@ nav {
       </div>
     </div>
 
-    <!-- ── PAGI ── -->
     <div class="section-head">
       <div class="section-icon">🌅</div>
       <div class="section-text">
@@ -1571,7 +1545,6 @@ nav {
       </div>
     </div>
 
-    <!-- ── SIANG ── -->
     <div class="section-head">
       <div class="section-icon">☀️</div>
       <div class="section-text">
@@ -1597,7 +1570,6 @@ nav {
       </div>
     </div>
 
-    <!-- ── SORE & MALAM ── -->
     <div class="section-head">
       <div class="section-icon">🌃</div>
       <div class="section-text">
@@ -1628,7 +1600,6 @@ nav {
       </div>
     </div>
 
-    <!-- Done Banner -->
     <div class="done-banner" id="done-banner">
       <span class="done-icon">🎉</span>
       <div>
@@ -1637,7 +1608,6 @@ nav {
       </div>
     </div>
 
-    <!-- Actions -->
     <div class="action-wrap">
       <div class="reset-info">
         <span class="dot-live"></span>
@@ -1648,16 +1618,9 @@ nav {
 
   </main>
 
-  <!-- Date Badge -->
   <div class="date-badge" id="date-badge">Memuat...</div>
 
-</div><!-- /#dashboard-screen -->
-
-
-<!-- ══════════════════════════════════════════
-     FIREBASE + AUTH + APP LOGIC
-══════════════════════════════════════════ -->
-<script type="module">
+</div><script type="module">
 import { initializeApp }                                        from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, set, onValue }                      from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 import { getAuth, signInWithEmailAndPassword,
@@ -1668,13 +1631,13 @@ import { getAuth, signInWithEmailAndPassword,
    FIREBASE INIT
 ══════════════════════════════════════════ */
 const firebaseConfig = {
-  apiKey:            "AIzaSyCpsG6b5SmTV8qb_eP3RZvDFTKQBXrCQt0",
-  authDomain:        "fanz-8e3ee.firebaseapp.com",
-  databaseURL:       "https://fanz-8e3ee-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId:         "fanz-8e3ee",
-  storageBucket:     "fanz-8e3ee.appspot.com",
+  apiKey: "AIzaSyCpsG6b5SmTV8qb_eP3RZvDFTKQBxRCQt0",
+  authDomain: "fanz-8e3ee.firebaseapp.com",
+  databaseURL: "https://fanz-8e3ee-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "fanz-8e3ee",
+  storageBucket: "fanz-8e3ee.firebasestorage.app",
   messagingSenderId: "1001215008191",
-  appId:             "1:1001215008191:web:ab892bb8fd36a7eef950a"
+  appId: "1:1001215008191:web:ab892bb8fd36a7ceef950a"
 };
 
 const app  = initializeApp(firebaseConfig);
