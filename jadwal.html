@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Routine - Clean Blue</title>
+    <style>
+        :root {
+            --bg-body: #f4f7f6; /* Abu-abu sangat muda mendekati putih agar tidak silau */
+            --bg-card: #ffffff; /* Putih bersih untuk latar utama */
+            --blue-primary: #1e40af; /* Biru safir elegan untuk teks utama */
+            --blue-accent: #3b82f6; /* Biru terang untuk indikator jam */
+            --blue-light: #eff6ff; /* Biru pastel super lembut untuk hover & background jam */
+            --text-dark: #1e293b; /* Warna teks utama (bukan hitam pekat) */
+            --text-muted: #64748b; /* Abu-abu lembut untuk teks sekunder */
+            --border-color: #e2e8f0; /* Garis pembatas tipis yang soft */
+            --success-color: #10b981; /* Hijau pastel untuk tanda selesai */
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 640px;
+            background-color: var(--bg-card);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(30, 64, 175, 0.04); /* Shadow biru sangat tipis */
+            border: 1px solid var(--border-color);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--blue-primary);
+            margin: 0 0 8px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin: 30px 0 12px 0;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 18px;
+            background-color: var(--bg-card);
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            transition: transform 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+            cursor: pointer;
+        }
+
+        .todo-item:hover {
+            border-color: var(--blue-accent);
+            background-color: var(--blue-light);
+            transform: translateY(-1px);
+        }
+
+        /* Checkbox Lingkaran Elegan */
+        .checkbox-container {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #cbd5e1;
+            border-radius: 50%;
+            margin-right: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s ease;
+            background-color: #fff;
+            flex-shrink: 0;
+        }
+
+        .time-box {
+            font-size: 12px;
+            font-weight: 600;
+            background-color: var(--blue-light);
+            color: var(--blue-primary);
+            padding: 5px 10px;
+            border-radius: 6px;
+            margin-right: 16px;
+            white-space: nowrap;
+        }
+
+        .task-text {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-dark);
+            flex-grow: 1;
+            line-height: 1.4;
+            transition: all 0.2s ease;
+        }
+
+        .task-text b {
+            color: var(--blue-primary);
+        }
+
+        /* Efek Transisi Ketika Selesai Dikerjakan */
+        .todo-item.completed {
+            background-color: #f8fafc;
+            border-color: var(--border-color);
+            transform: translateY(0);
+        }
+
+        .todo-item.completed .task-text {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .todo-item.completed .task-text b {
+            color: var(--text-muted);
+        }
+
+        .todo-item.completed .time-box {
+            background-color: #f1f5f9;
+            color: var(--text-muted);
+        }
+
+        .todo-item.completed .checkbox-container {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+        }
+
+        .todo-item.completed .checkbox-container::after {
+            content: '✓';
+            color: #fff;
+            font-size: 11px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Jadwal Harian Produktif</h1>
+        <div class="subtitle">Klik pada baris tugas untuk menandai aktivitas yang sudah selesai</div>
+    </header>
+
+    <div class="section-title">🌅 Pagi Hari</div>
+    
+    <div class="todo-item" onclick="toggleTask(this)">
+        <div class="checkbox-container"></div>
+        <div class="time-box">05:00 - 06:00</div>
+        <div class="task-text">Bangun Pagi & Rutinitas Awal (Ibadah, Mandi)</div>
+    </div>
+
+    <div class="todo-item" onclick="toggleTask(this)">
+        <div class="checkbox-container"></div>
+        <div class="time-box">06:00 - 07:00</div>
+        <div class="task-text">Sarapan Sehat & Hirup Udara Segar</div>
+    </div>
+
+    <div class="todo-item" onclick="toggleTask(this)">
+        <div class="checkbox-container"></div>
+        <div class="time-box">07:00 - 09:00</div>
+        <div class="task-text"><b>Deep Work:</b> Asah Skill Bahasa Inggris (Membaca/Listening)</div>
+    </div>
+
+    <div class="section-title">☀️ Siang Hari</div>
+
+    <div class="todo-item" onclick="toggleTask(this)">
+        <div class="checkbox-container"></div>
+        <div class="time-box">09:00 - 12:00</div>
+        <div class="task-text"><b>Freelance Work:</b> Garap Proyek Video / Desain Klien</div>
+    </div>
+
+    <div class="todo-item" onclick="toggleTask(this)">
+        <div class="checkbox-container"></div>
+        <div class="time-box">12:00 - 13:30</div>
+        <div class="task-text">Istirahat, Makan Siang & Power Nap (15-20 Menit)</div>
+    </div>
+
+    <div class="todo-item" onclick="toggleTask(this)">
+        <div class="checkbox-container"></div>
+        <div class="time-box">13:30 - 15:30</div>
+        <div class="task-text">Sisa Kerja Freelance / Eksperimen Lab Jaringan</div>
+    </div>
+
+    <div class="section-title">🌆 Sore Hari</div>
+
+    <div class="todo-item" onclick="toggleTask(this)">
+        <div class="checkbox-container"></div>
+        <div class="time-box">15:30 - 16:30</div>
+        <div class="task-text">Urus Administrasi, Balas Chat Klien & Update Portofolio</div>
+    </div>
+
+    <div class="todo-item" onclick="toggleTask(this)">
+        <div class="checkbox-container"></div>
+        <div class="time-box">16:30 - 18:00</div>
+        <div class="task-text">Olahraga Ringan (Stretching/Workout) & Mandi Sore</div>
+    </div>
+
+    <div class="section-title">🌃 Malam Hari</div>
+
+    <div class="todo-item" onclick="toggleTask(this)">
+        <div class="checkbox-container"></div>
+        <div class="time-box">18:00 - 19:30</div>
+        <div class="task-text">Waktu Keluarga / Me Time</div>
+    </div>
+
+    <div class="todo-item" onclick="toggleTask(this)">
+        <div class="checkbox-container"></div>
+        <div class="time-box">19:30 - 21:30</div>
+        <div class="task-text">Hiburan Strategis / Mabar Gaming Santai</div>
+    </div>
+
+    <div class="todo-item" onclick="toggleTask(this)">
+        <div class="checkbox-container"></div>
+        <div class="time-box">21:30 - 22:00</div>
+        <div class="task-text">Review Evaluasi Hari Ini & Tulis To-Do List Besok</div>
+    </div>
+
+    <div class="todo-item" onclick="toggleTask(this)">
+        <div class="checkbox-container"></div>
+        <div class="time-box">22:00</div>
+        <div class="task-text">Tidur (Istirahat Total untuk Pulihkan Energi)</div>
+    </div>
+
+</div>
+
+<script>
+    // Fungsi interaktif untuk mencentang tugas
+    function toggleTask(element) {
+        element.classList.toggle('completed');
+    }
+</script>
+
+</body>
+</html>
